@@ -1,0 +1,2921 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>工作进度追踪器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            color: #555;
+            min-width: 80px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .time-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .calculated-info {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .calculated-info .label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .calculated-info .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .work-history {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .work-history-header {
+            padding: 20px;
+            padding-bottom: 15px;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .work-history h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-scroll-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            padding-top: 10px;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .history-date {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .history-time {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .history-result {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 60px;
+            min-height: 36px;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+            touch-action: manipulation;
+        }
+
+        .delete-btn:active {
+            background: #ff5252;
+            transform: scale(0.95);
+        }
+
+        .total-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .total-summary .label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .total-summary .amount {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .encouragement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 320px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .encouragement-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .encouragement-popup .emoji {
+            font-size: 60px;
+            margin-bottom: 15px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .encouragement-popup h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .encouragement-popup p {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+
+        .encouragement-popup button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        .confirm-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-dialog.show {
+            display: flex;
+        }
+
+        .confirm-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 320px;
+            width: 85%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .confirm-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .confirm-content h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .confirm-content p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            white-space: pre-line;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .confirm-buttons button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            min-height: 48px;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+
+        .confirm-cancel-btn {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .confirm-cancel-btn:active {
+            background: #d0d0d0;
+        }
+
+        .confirm-ok-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .confirm-ok-btn:active {
+            opacity: 0.8;
+        }
+
+        .confirm-ok-btn.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        }
+
+        .settings-section {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .settings-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-row label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .settings-row input,
+        .settings-row select {
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .settings-row input[type="number"] {
+            min-width: 60px;
+        }
+        
+        .settings-row select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+            padding-right: 32px;
+        }
+
+        .settings-toggle {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+            color: #667eea;
+            border: 1px solid #e0e0e0;
+        }
+
+        .goals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .goals-header h2 {
+            font-size: 18px;
+            color: #333;
+            margin: 0;
+        }
+
+        .add-goal-btn {
+            padding: 8px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .goal-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            min-height: 44px;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+
+        .goal-actions button:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        .confirm-purchase-btn {
+            background: #4CAF50;
+            color: white;
+            font-weight: 600;
+        }
+
+        .confirm-purchase-btn:active {
+            background: #45a049;
+        }
+
+        .edit-goal-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .edit-goal-btn:active {
+            background: #5568d3;
+        }
+
+        .delete-goal-btn {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .delete-goal-btn:active {
+            background: #ff5252;
+        }
+
+        .refund-btn {
+            background: #FFA726;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .goal-card.waiting {
+            opacity: 0.8;
+            border: 2px dashed #999;
+        }
+
+        .goal-card.waiting .progress-bar {
+            background: linear-gradient(90deg, #FFA726 0%, #FB8C00 100%);
+        }
+
+        .goal-card.waiting .goal-title::after {
+            content: ' ⏳';
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .priority-1 {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .priority-other {
+            background: #FFA726;
+            color: white;
+        }
+
+        .copy-message-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .copy-success {
+            background: #4CAF50 !important;
+        }
+
+        .goal-form-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 350px;
+            width: 90%;
+            transition: transform 0.3s ease;
+        }
+
+        .goal-form-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .goal-form-popup h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .save-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .completed-goals-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .completed-goals-section h2 {
+            font-size: 18px;
+            color: #4CAF50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .completed-goal-item {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .completed-goal-info {
+            flex: 1;
+        }
+
+        .completed-goal-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .completed-goal-details {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .completed-goal-badge {
+            font-size: 30px;
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .goal-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .goal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .goal-status {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .progress-bar-container {
+            background: #f0f0f0;
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .goal-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .goal-money {
+            font-size: 16px;
+            font-weight: 600;
+            color: #667eea;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .remaining-days-highlight {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .remaining-days-highlight .big-number {
+            font-size: 42px;
+            font-weight: 700;
+            margin: 8px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .remaining-days-highlight .label {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .remaining-days-highlight .motivation {
+            font-size: 16px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .completed {
+            opacity: 0.7;
+        }
+
+        .completed .progress-bar {
+            background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .empty-goals {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-goals .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-goals p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 工作进度追踪器</h1>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label>日期：</label>
+                    <input type="date" id="dateInput">
+                </div>
+                <div class="input-group" style="margin-bottom: 5px;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="isPublicHoliday" style="width: 18px; height: 18px; margin-right: 8px; cursor: pointer;">
+                        <span style="font-size: 13px;">🎉 公共假期 (Public Holiday)</span>
+                    </label>
+                </div>
+                <div class="time-inputs">
+                    <div>
+                        <label style="font-size: 12px; color: #888;">开始时间</label>
+                        <input type="time" id="startTime">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: #888;">结束时间</label>
+                        <input type="time" id="endTime">
+                    </div>
+                </div>
+                <div class="calculated-info">
+                    <div class="label">工时 / 工资</div>
+                    <div class="value" id="calculatedDisplay">请输入时间</div>
+                </div>
+                <button class="add-btn" id="addWorkRecordBtn">✅ 记录本次工作</button>
+                
+                <div class="settings-toggle" id="settingsToggle">
+                    ⚙️ 设置 <span id="settingsArrow">▼</span>
+                </div>
+                
+                <div class="settings-section" id="settingsContent" style="display: none; margin-top: 0; padding-top: 12px;">
+                    <div class="settings-row">
+                        <label>👤 姓名</label>
+                        <input type="text" id="userNameInput" placeholder="张三">
+                    </div>
+                    <div class="settings-row">
+                        <label>💰 时薪 ($)</label>
+                        <input type="number" id="hourlyRateInput" step="0.01" min="0">
+                    </div>
+                    <div class="settings-row">
+                        <label>⏱️ 日工时</label>
+                        <input type="number" id="dailyHoursInput" step="0.5" min="0" value="7" placeholder="小时">
+                    </div>
+                    <div class="settings-row">
+                        <label>🕐 默认上班</label>
+                        <input type="time" id="defaultStartTime">
+                    </div>
+                    
+                    <!-- 墨尔本惩罚率设置 -->
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #e0e0e0;">
+                        <div class="settings-row" style="margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; cursor: pointer; flex: 1;">
+                                <input type="checkbox" id="enablePenaltyRates" style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;">
+                                <span>🇦🇺 启用墨尔本惩罚率计算</span>
+                            </label>
+                        </div>
+                        
+                        <div id="penaltyRatesSettings" style="display: none; background: #f0f7ff; padding: 12px; border-radius: 8px; margin-top: 10px;">
+                            <div style="font-size: 13px; color: #555; margin-bottom: 12px; line-height: 1.5;">
+                                <strong>📋 惩罚率说明：</strong><br>
+                                根据澳洲Fair Work标准，不同时间段工资倍率不同
+                            </div>
+                            
+                            <!-- 行业预设 -->
+                            <div style="background: white; padding: 10px; border-radius: 6px; margin-bottom: 12px; border: 1px solid #d0e0f0;">
+                                <div style="font-size: 12px; font-weight: 600; color: #555; margin-bottom: 6px;">⚡ 快速预设（常见行业）：</div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                                    <button onclick="applyIndustryPreset('retail')" style="padding: 6px; background: #e3f2fd; border: 1px solid #90caf9; border-radius: 4px; font-size: 11px; cursor: pointer;">零售 Retail</button>
+                                    <button onclick="applyIndustryPreset('hospitality')" style="padding: 6px; background: #fff3e0; border: 1px solid #ffb74d; border-radius: 4px; font-size: 11px; cursor: pointer;">酒店 Hospitality</button>
+                                    <button onclick="applyIndustryPreset('restaurant')" style="padding: 6px; background: #f3e5f5; border: 1px solid #ba68c8; border-radius: 4px; font-size: 11px; cursor: pointer;">餐厅 Restaurant</button>
+                                    <button onclick="applyIndustryPreset('healthcare')" style="padding: 6px; background: #e8f5e9; border: 1px solid #66bb6a; border-radius: 4px; font-size: 11px; cursor: pointer;">医疗 Healthcare</button>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-row" style="margin-bottom: 8px;">
+                                <label>周六</label>
+                                <select id="saturdayRate" style="font-size: 13px;">
+                                    <option value="1">1x (100% - 无加成)</option>
+                                    <option value="1.1">1.1x (110%)</option>
+                                    <option value="1.15">1.15x (115%)</option>
+                                    <option value="1.25">1.25x (125%)</option>
+                                    <option value="1.5" selected>1.5x (150%)</option>
+                                    <option value="1.75">1.75x (175%)</option>
+                                    <option value="2">2x (200%)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="settings-row" style="margin-bottom: 8px;">
+                                <label>周日</label>
+                                <select id="sundayRate" style="font-size: 13px;">
+                                    <option value="1">1x (100% - 无加成)</option>
+                                    <option value="1.25">1.25x (125%)</option>
+                                    <option value="1.5">1.5x (150%)</option>
+                                    <option value="1.75" selected>1.75x (175%)</option>
+                                    <option value="2">2x (200%)</option>
+                                    <option value="2.25">2.25x (225%)</option>
+                                    <option value="2.5">2.5x (250%)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="settings-row" style="margin-bottom: 12px;">
+                                <label>假期</label>
+                                <select id="publicHolidayRate" style="font-size: 13px;">
+                                    <option value="1.5">1.5x (150%)</option>
+                                    <option value="1.75">1.75x (175%)</option>
+                                    <option value="2" selected>2x (200%)</option>
+                                    <option value="2.25">2.25x (225%)</option>
+                                    <option value="2.5">2.5x (250%)</option>
+                                    <option value="2.75">2.75x (275%)</option>
+                                    <option value="3">3x (300%)</option>
+                                    <option value="3.125">3.125x (312.5% - Casual)</option>
+                                </select>
+                            </div>
+                            
+                            <!-- 深夜时段设置 -->
+                            <div style="margin-top: 15px; padding-top: 12px; border-top: 1px solid #d0e0f0;">
+                                <div class="settings-row" style="margin-bottom: 10px;">
+                                    <label style="display: flex; align-items: center; cursor: pointer; flex: 1;">
+                                        <input type="checkbox" id="enableNightShift" style="width: 18px; height: 18px; margin-right: 8px; cursor: pointer;">
+                                        <span style="font-size: 13px;">🌙 启用深夜/傍晚时段加成</span>
+                                    </label>
+                                </div>
+                                
+                                <div id="nightShiftSettings" style="display: none;">
+                                    <div style="font-size: 11px; color: #666; margin-bottom: 8px; line-height: 1.4;">
+                                        额外加成（在原倍率基础上叠加）<br>
+                                        <span style="color: #888; font-size: 10px;">例：周日1.75x + 深夜1.3x = 2.275x</span>
+                                    </div>
+                                    
+                                    <div class="settings-row" style="margin-bottom: 8px;">
+                                        <label style="font-size: 12px;">开始</label>
+                                        <input type="time" id="nightStartTime" value="22:00">
+                                    </div>
+                                    
+                                    <div class="settings-row" style="margin-bottom: 8px;">
+                                        <label style="font-size: 12px;">结束</label>
+                                        <input type="time" id="nightEndTime" value="06:00">
+                                    </div>
+                                    
+                                    <div class="settings-row">
+                                        <label style="font-size: 12px;">倍率</label>
+                                        <select id="nightShiftMultiplier" style="font-size: 12px;">
+                                            <option value="1.1">1.1x (额外10%)</option>
+                                            <option value="1.15">1.15x (额外15%)</option>
+                                            <option value="1.25">1.25x (额外25%)</option>
+                                            <option value="1.3" selected>1.3x (额外30%)</option>
+                                            <option value="1.5">1.5x (额外50%)</option>
+                                            <option value="1.75">1.75x (额外75%)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="font-size: 11px; color: #888; margin-top: 12px; line-height: 1.5; background: #fff3cd; padding: 8px; border-radius: 6px; border-left: 3px solid #ffc107;">
+                                <strong>💡 使用提示：</strong><br>
+                                • 周一至五为基本时薪<br>
+                                • 周末和假期自动计算惩罚率<br>
+                                • 跨越深夜时段会自动分段计算<br>
+                                • 不同行业倍率不同，请参考Fair Work网站
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="saveAllSettingsBtn" style="width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 12px;">✅ 保存所有设置</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="work-history">
+            <div class="work-history-header">
+                <h2>
+                    📋 工作记录
+                    <button class="delete-btn" id="clearHistoryBtn">清空记录</button>
+                </h2>
+                <div class="total-summary">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+                        <div>
+                            <div class="label" style="font-size: 12px;">未收款 💰</div>
+                            <div class="amount" style="font-size: 24px; color: #ff9800;" id="unpaidSalary">$0.00</div>
+                        </div>
+                        <div>
+                            <div class="label" style="font-size: 12px;">已收款 ✅</div>
+                            <div class="amount" style="font-size: 24px; color: #4CAF50;" id="paidSalary">$0.00</div>
+                        </div>
+                    </div>
+                    <div style="border-top: 2px solid rgba(255,255,255,0.3); padding-top: 10px;">
+                        <div class="label">合计工资</div>
+                        <div class="amount" id="totalSalary">$0.00</div>
+                    </div>
+                </div>
+            </div>
+            <div class="history-scroll-container" id="historyContainer"></div>
+        </div>
+
+        <div id="completedGoalsSection" class="completed-goals-section" style="display: none;">
+            <h2>🏆 已完成目标</h2>
+            <div id="completedGoalsContainer"></div>
+        </div>
+
+        <div class="header">
+            <div class="goals-header">
+                <h2>🎯 储蓄目标</h2>
+                <button class="add-goal-btn" id="addGoalBtn">+ 添加目标</button>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-label">总工时</div>
+                    <div class="stat-value" id="totalHours">0h</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">已赚金额</div>
+                    <div class="stat-value" id="totalEarned">$0</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="goalsContainer"></div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="reset-btn" id="exportDataBtn" style="background: #4CAF50;">📥 下载备份</button>
+            <button class="reset-btn" id="copyDataBtn" style="background: #FF9800;">📋 复制数据</button>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="reset-btn" id="importDataBtn" style="background: #2196F3;">📤 导入备份</button>
+        </div>
+        <input type="file" id="importFileInput" accept=".json" style="display: none;">
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="encouragement-popup" id="encouragementPopup">
+        <div class="emoji" id="encouragementEmoji">🎉</div>
+        <h3 id="encouragementTitle">太棒了！</h3>
+        <p id="encouragementMessage">你真的很努力！</p>
+        <button id="closeEncouragementBtn">继续加油！</button>
+    </div>
+
+    <div class="confirm-dialog" id="confirmDialog">
+        <div class="confirm-content">
+            <div class="confirm-icon" id="confirmIcon">⚠️</div>
+            <h3 id="confirmTitle">确认操作</h3>
+            <p id="confirmMessage">确定要执行此操作吗？</p>
+            <div class="confirm-buttons">
+                <button class="confirm-cancel-btn" id="confirmCancelBtn">取消</button>
+                <button class="confirm-ok-btn" id="confirmOkBtn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="goal-form-popup" id="goalFormPopup">
+        <h3 id="goalFormTitle">添加新目标</h3>
+        <div class="form-group">
+            <label>图标：</label>
+            <select id="goalIcon">
+                <option value="📱">📱 手机</option>
+                <option value="💻">💻 电脑</option>
+                <option value="⌚">⌚ 手表</option>
+                <option value="🎮">🎮 游戏机</option>
+                <option value="📷">📷 相机</option>
+                <option value="🎧">🎧 耳机</option>
+                <option value="🚗">🚗 汽车</option>
+                <option value="🏠">🏠 房子</option>
+                <option value="✈️">✈️ 旅行</option>
+                <option value="💰">💰 存款</option>
+                <option value="🎯">🎯 目标</option>
+                <option value="⭐">⭐ 其他</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>目标名称：</label>
+            <input type="text" id="goalName" placeholder="例如：iPhone 16 Pro Max">
+        </div>
+        <div class="form-group">
+            <label>目标价格（$）：</label>
+            <input type="number" id="goalPrice" placeholder="例如：1999" min="0" step="0.01">
+        </div>
+        <div class="form-group" style="background: #f8f9fa; padding: 12px; border-radius: 8px;">
+            <div style="font-size: 13px; color: #666; margin-bottom: 5px;">📊 自动计算：</div>
+            <div id="goalCalculation" style="font-size: 14px; color: #667eea; font-weight: 600;">请输入价格</div>
+        </div>
+        <div class="form-actions">
+            <button class="cancel-btn" id="cancelGoalBtn">取消</button>
+            <button class="save-btn" id="saveGoalBtn">保存</button>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_HOURLY_RATE = 24.95;
+        const DEFAULT_HOURS_PER_DAY = 7;
+
+        const encouragementMessages = [
+            { emoji: '🎉', title: '太棒了！', message: '工作8小时真的很辛苦！你今天赚了$199.60，离目标又近了一步！' },
+            { emoji: '💪', title: '你真强！', message: '连续工作这么久，你的毅力让人佩服！坚持下去，梦想就在前方！' },
+            { emoji: '⭐', title: '超级棒！', message: '8小时的努力不会白费！每一分钱都在向你的目标靠近！' },
+            { emoji: '🔥', title: '太努力了！', message: '你的付出值得被看见！休息一下，明天继续加油！' },
+            { emoji: '🏆', title: '你是冠军！', message: '又完成了满满一天的工作！你离新手机/新电脑越来越近了！' },
+            { emoji: '🌟', title: '闪耀的你！', message: '8小时的辛勤工作，证明了你的决心！继续保持，胜利属于你！' },
+            { emoji: '💎', title: '你太棒了！', message: '每一小时的努力都在为梦想添砖加瓦！你做得很好！' },
+            { emoji: '🎯', title: '目标达成者！', message: '又是充实的一天！记得好好休息，养精蓄锐！' },
+            { emoji: '🚀', title: '势不可挡！', message: '你的努力就像火箭一样，正在推动你飞向目标！' },
+            { emoji: '👏', title: '为你鼓掌！', message: '辛苦工作8小时，你值得所有的掌声和休息！' }
+        ];
+
+        let confirmCallback = null;
+
+        function showConfirm(title, message, icon = '⚠️', isDanger = false) {
+            return new Promise((resolve) => {
+                document.getElementById('confirmIcon').textContent = icon;
+                document.getElementById('confirmTitle').textContent = title;
+                document.getElementById('confirmMessage').textContent = message;
+                
+                const okBtn = document.getElementById('confirmOkBtn');
+                if (isDanger) {
+                    okBtn.classList.add('danger');
+                } else {
+                    okBtn.classList.remove('danger');
+                }
+                
+                document.getElementById('confirmDialog').classList.add('show');
+                
+                confirmCallback = resolve;
+            });
+        }
+
+        function hideConfirm() {
+            document.getElementById('confirmDialog').classList.remove('show');
+        }
+
+        function showSuccessToast(message) {
+            showToast(message, '#4CAF50');
+        }
+
+        function showErrorToast(message) {
+            showToast(message, '#ff6b6b');
+        }
+
+        function showToast(message, bgColor) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: ${bgColor};
+                color: white;
+                padding: 20px 30px;
+                border-radius: 15px;
+                font-size: 16px;
+                font-weight: 600;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                z-index: 3000;
+                animation: fadeInOut 2s ease;
+                max-width: 80%;
+                text-align: center;
+            `;
+            toast.textContent = message;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                    20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+                if (document.head.contains(style)) {
+                    document.head.removeChild(style);
+                }
+            }, 2000);
+        }
+
+        document.getElementById('confirmOkBtn').addEventListener('click', function() {
+            hideConfirm();
+            if (confirmCallback) {
+                confirmCallback(true);
+                confirmCallback = null;
+            }
+        });
+
+        document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+            hideConfirm();
+            if (confirmCallback) {
+                confirmCallback(false);
+                confirmCallback = null;
+            }
+        });
+
+        function showEncouragement(hours, salary, date) {
+            const randomMsg = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
+            
+            document.getElementById('encouragementEmoji').textContent = randomMsg.emoji;
+            document.getElementById('encouragementTitle').textContent = randomMsg.title;
+            
+            const dateObj = new Date(date + 'T00:00:00');
+            const dateStr = dateObj.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });
+            
+            let message = randomMsg.message;
+            if (hours >= 10) {
+                message = `${dateStr}累计工作${hours.toFixed(1)}小时！今天赚了$${salary.toFixed(2)}！这种拼劲太让人敬佩了！记得好好休息哦！`;
+            } else if (hours >= 8) {
+                message = `${dateStr}满满${hours.toFixed(1)}小时的努力，今天赚了$${salary.toFixed(2)}！离目标又近了一大步！`;
+            }
+            
+            document.getElementById('encouragementMessage').textContent = message;
+            
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('encouragementPopup').classList.add('show');
+        }
+
+        function closeEncouragement() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('encouragementPopup').classList.remove('show');
+        }
+
+        function closePopups() {
+            closeEncouragement();
+            closeGoalForm();
+        }
+
+        function renderCompletedGoals() {
+            const section = document.getElementById('completedGoalsSection');
+            const container = document.getElementById('completedGoalsContainer');
+            
+            if (data.completedGoals.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            container.innerHTML = data.completedGoals.map(goal => {
+                const purchaseDate = goal.purchaseDate ? new Date(goal.purchaseDate).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }) : '未知';
+                
+                return `<div class="completed-goal-item">
+                    <div class="completed-goal-info">
+                        <div class="completed-goal-title">${goal.icon} ${goal.name}</div>
+                        <div class="completed-goal-details">🎉 $${goal.price.toFixed(2)} · ${purchaseDate}</div>
+                    </div>
+                    <div class="completed-goal-badge">✅</div>
+                    <button class="refund-btn" data-goal-id="${goal.id}">↩️ 退款</button>
+                </div>`;
+            }).join('');
+        }
+
+        let editingGoalId = null;
+
+        function openGoalForm(goalId = null) {
+            editingGoalId = goalId;
+            
+            if (goalId) {
+                const goal = data.goals.find(g => g.id === goalId);
+                if (!goal) return;
+                
+                document.getElementById('goalFormTitle').textContent = '编辑目标';
+                document.getElementById('goalIcon').value = goal.icon;
+                document.getElementById('goalName').value = goal.name;
+                document.getElementById('goalPrice').value = goal.price || (goal.days * getDailyHours() * getHourlyRate()).toFixed(2);
+                calculateGoalDays();
+            } else {
+                document.getElementById('goalFormTitle').textContent = '添加新目标';
+                document.getElementById('goalIcon').value = '📱';
+                document.getElementById('goalName').value = '';
+                document.getElementById('goalPrice').value = '';
+                document.getElementById('goalCalculation').textContent = '请输入价格';
+            }
+            
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('goalFormPopup').classList.add('show');
+        }
+
+        function closeGoalForm() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('goalFormPopup').classList.remove('show');
+            editingGoalId = null;
+        }
+
+        function getDailyHours() {
+            return data.dailyHours || DEFAULT_HOURS_PER_DAY;
+        }
+
+        function calculateGoalDays() {
+            const price = parseFloat(document.getElementById('goalPrice').value);
+            
+            if (isNaN(price) || price <= 0) {
+                document.getElementById('goalCalculation').textContent = '请输入价格';
+                return null;
+            }
+            
+            const hourlyRate = getHourlyRate();
+            const dailyHours = getDailyHours();
+            const totalHours = price / hourlyRate;
+            const days = totalHours / dailyHours;
+            
+            document.getElementById('goalCalculation').textContent = 
+                `需要工作 ${days.toFixed(1)} 天（${totalHours.toFixed(1)} 小时）`;
+            
+            return { price, days, hours: totalHours };
+        }
+
+        function saveGoal() {
+            const icon = document.getElementById('goalIcon').value;
+            const name = document.getElementById('goalName').value.trim();
+            const price = parseFloat(document.getElementById('goalPrice').value);
+            
+            if (!name) {
+                showErrorToast('❌ 请输入目标名称！');
+                return;
+            }
+            
+            if (isNaN(price) || price <= 0) {
+                showErrorToast('❌ 请输入有效的价格！');
+                return;
+            }
+            
+            const calc = calculateGoalDays();
+            if (!calc) return;
+            
+            if (editingGoalId) {
+                const goal = data.goals.find(g => g.id === editingGoalId);
+                if (goal) {
+                    goal.icon = icon;
+                    goal.name = name;
+                    goal.price = price;
+                    goal.days = calc.days;
+                    goal.completed = false;
+                }
+            } else {
+                const newId = data.goals.length > 0 ? Math.max(...data.goals.map(g => g.id)) + 1 : 1;
+                data.goals.push({
+                    id: newId,
+                    name: name,
+                    price: price,
+                    days: calc.days,
+                    icon: icon,
+                    completed: false
+                });
+            }
+            
+            saveData(data);
+            renderGoals();
+            closeGoalForm();
+        }
+
+        async function deleteGoal(goalId) {
+            const goal = data.goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            const confirmed = await showConfirm(
+                '删除目标？',
+                `确定要删除目标"${goal.name}"吗？`,
+                '🗑️',
+                true
+            );
+            
+            if (confirmed) {
+                data.goals = data.goals.filter(g => g.id !== goalId);
+                saveData(data);
+                renderGoals();
+                showSuccessToast('✅ 目标已删除');
+            }
+        }
+
+        function moveGoalUp(goalId) {
+            const index = data.goals.findIndex(g => g.id === goalId);
+            if (index > 0) {
+                [data.goals[index], data.goals[index - 1]] = [data.goals[index - 1], data.goals[index]];
+                saveData(data);
+                renderGoals();
+            }
+        }
+
+        function moveGoalDown(goalId) {
+            const index = data.goals.findIndex(g => g.id === goalId);
+            if (index < data.goals.length - 1) {
+                [data.goals[index], data.goals[index + 1]] = [data.goals[index + 1], data.goals[index]];
+                saveData(data);
+                renderGoals();
+            }
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('workProgress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (!data.completedGoals) {
+                    data.completedGoals = [];
+                }
+                if (!data.hourlyRate) {
+                    data.hourlyRate = DEFAULT_HOURLY_RATE;
+                }
+                if (!data.userName) {
+                    data.userName = '张三';
+                }
+                if (!data.dailyHours) {
+                    data.dailyHours = DEFAULT_HOURS_PER_DAY;
+                }
+                if (data.spentMoney === undefined) {
+                    data.spentMoney = 0;
+                }
+                // 添加惩罚率设置
+                if (data.penaltyRates === undefined) {
+                    data.penaltyRates = {
+                        enabled: false,
+                        saturday: 1.5,
+                        sunday: 1.75,
+                        publicHoliday: 2,
+                        nightShift: {
+                            enabled: false,
+                            startTime: '22:00',
+                            endTime: '06:00',
+                            multiplier: 1.3
+                        }
+                    };
+                } else if (!data.penaltyRates.nightShift) {
+                    // 为旧数据添加深夜时段设置
+                    data.penaltyRates.nightShift = {
+                        enabled: false,
+                        startTime: '22:00',
+                        endTime: '06:00',
+                        multiplier: 1.3
+                    };
+                }
+                data.goals = data.goals.map(goal => {
+                    if (!goal.price) {
+                        goal.price = goal.days * data.dailyHours * data.hourlyRate;
+                    }
+                    if (goal.purchased === undefined) {
+                        goal.purchased = false;
+                    }
+                    return goal;
+                });
+                if (data.completedGoals) {
+                    data.completedGoals = data.completedGoals.map(goal => {
+                        if (!goal.price) {
+                            goal.price = goal.days * data.dailyHours * data.hourlyRate;
+                        }
+                        if (goal.purchaseDate === undefined && goal.completedDate) {
+                            goal.purchaseDate = goal.completedDate;
+                        }
+                        return goal;
+                    });
+                }
+                // 为历史记录添加isPublicHoliday和paid字段
+                if (data.workHistory) {
+                    data.workHistory = data.workHistory.map(record => {
+                        if (record.isPublicHoliday === undefined) {
+                            record.isPublicHoliday = false;
+                        }
+                        if (record.paid === undefined) {
+                            record.paid = false;
+                        }
+                        return record;
+                    });
+                }
+                return data;
+            }
+            return { 
+                totalHours: 0, 
+                goals: [],
+                completedGoals: [],
+                workHistory: [],
+                defaultStartTime: '17:00',
+                hourlyRate: DEFAULT_HOURLY_RATE,
+                userName: '张三',
+                dailyHours: DEFAULT_HOURS_PER_DAY,
+                spentMoney: 0,
+                penaltyRates: {
+                    enabled: false,
+                    saturday: 1.5,
+                    sunday: 1.75,
+                    publicHoliday: 2,
+                    nightShift: {
+                        enabled: false,
+                        startTime: '22:00',
+                        endTime: '06:00',
+                        multiplier: 1.3
+                    }
+                }
+            };
+        }
+
+        function saveData(data) {
+            localStorage.setItem('workProgress', JSON.stringify(data));
+        }
+
+        let data = loadData();
+
+        function getHourlyRate() {
+            return data.hourlyRate || DEFAULT_HOURLY_RATE;
+        }
+
+        function setHourlyRateDisplay() {
+            const rate = getHourlyRate();
+            document.getElementById('hourlyRateInput').value = rate.toFixed(2);
+        }
+
+        function setUserNameDisplay() {
+            const name = data.userName || '张三';
+            document.getElementById('userNameInput').value = name;
+        }
+
+        function setDailyHoursDisplay() {
+            const hours = getDailyHours();
+            document.getElementById('dailyHoursInput').value = hours;
+        }
+
+        function setPenaltyRatesDisplay() {
+            // 设置惩罚率开关状态
+            document.getElementById('enablePenaltyRates').checked = data.penaltyRates.enabled || false;
+            
+            // 设置惩罚率倍数
+            document.getElementById('saturdayRate').value = data.penaltyRates.saturday || 1.5;
+            document.getElementById('sundayRate').value = data.penaltyRates.sunday || 1.75;
+            document.getElementById('publicHolidayRate').value = data.penaltyRates.publicHoliday || 2;
+            
+            // 设置深夜时段
+            const nightShift = data.penaltyRates.nightShift || {};
+            document.getElementById('enableNightShift').checked = nightShift.enabled || false;
+            document.getElementById('nightStartTime').value = nightShift.startTime || '22:00';
+            document.getElementById('nightEndTime').value = nightShift.endTime || '06:00';
+            document.getElementById('nightShiftMultiplier').value = nightShift.multiplier || 1.3;
+            
+            // 根据开关状态显示/隐藏设置
+            togglePenaltyRatesSettings();
+            toggleNightShiftSettings();
+        }
+
+        function togglePenaltyRatesSettings() {
+            const enabled = document.getElementById('enablePenaltyRates').checked;
+            const settingsDiv = document.getElementById('penaltyRatesSettings');
+            settingsDiv.style.display = enabled ? 'block' : 'none';
+        }
+
+        function toggleNightShiftSettings() {
+            const enabled = document.getElementById('enableNightShift').checked;
+            const settingsDiv = document.getElementById('nightShiftSettings');
+            settingsDiv.style.display = enabled ? 'block' : 'none';
+        }
+
+        // 应用行业预设
+        function applyIndustryPreset(industry) {
+            const presets = {
+                retail: {
+                    name: '零售业 (General Retail)',
+                    saturday: 1.25,
+                    sunday: 1.75,
+                    publicHoliday: 2.5,
+                    nightEnabled: false,
+                    nightStart: '18:00',
+                    nightEnd: '21:00',
+                    nightMultiplier: 1.1
+                },
+                hospitality: {
+                    name: '酒店业 (Hospitality)',
+                    saturday: 1.5,
+                    sunday: 1.75,
+                    publicHoliday: 2.5,
+                    nightEnabled: true,
+                    nightStart: '19:00',
+                    nightEnd: '07:00',
+                    nightMultiplier: 1.15
+                },
+                restaurant: {
+                    name: '餐厅 (Restaurant)',
+                    saturday: 1.5,
+                    sunday: 1.75,
+                    publicHoliday: 2.5,
+                    nightEnabled: true,
+                    nightStart: '22:00',
+                    nightEnd: '07:00',
+                    nightMultiplier: 1.25
+                },
+                healthcare: {
+                    name: '医疗 (Healthcare)',
+                    saturday: 1.5,
+                    sunday: 1.75,
+                    publicHoliday: 2,
+                    nightEnabled: true,
+                    nightStart: '20:00',
+                    nightEnd: '06:00',
+                    nightMultiplier: 1.3
+                }
+            };
+            
+            const preset = presets[industry];
+            if (!preset) return;
+            
+            // 应用预设值
+            document.getElementById('saturdayRate').value = preset.saturday;
+            document.getElementById('sundayRate').value = preset.sunday;
+            document.getElementById('publicHolidayRate').value = preset.publicHoliday;
+            document.getElementById('enableNightShift').checked = preset.nightEnabled;
+            document.getElementById('nightStartTime').value = preset.nightStart;
+            document.getElementById('nightEndTime').value = preset.nightEnd;
+            document.getElementById('nightShiftMultiplier').value = preset.nightMultiplier;
+            
+            toggleNightShiftSettings();
+            
+            showSuccessToast(`✅ 已应用${preset.name}预设！`);
+        }
+
+        async function saveAllSettings() {
+            const newName = document.getElementById('userNameInput').value.trim();
+            const newRate = parseFloat(document.getElementById('hourlyRateInput').value);
+            const newDailyHours = parseFloat(document.getElementById('dailyHoursInput').value);
+            const newDefaultTime = document.getElementById('defaultStartTime').value;
+            
+            // 验证所有输入
+            if (!newName) {
+                showErrorToast('❌ 请输入姓名！');
+                return;
+            }
+            
+            if (isNaN(newRate) || newRate <= 0) {
+                showErrorToast('❌ 请输入有效的时薪！');
+                return;
+            }
+            
+            if (isNaN(newDailyHours) || newDailyHours <= 0) {
+                showErrorToast('❌ 请输入有效的工作时长！');
+                return;
+            }
+            
+            if (!newDefaultTime) {
+                showErrorToast('❌ 请选择默认开始时间！');
+                return;
+            }
+            
+            // 检查是否需要确认（时薪或工作时长改变）
+            const oldRate = getHourlyRate();
+            const oldDailyHours = getDailyHours();
+            const rateChanged = newRate !== oldRate;
+            const hoursChanged = newDailyHours !== oldDailyHours;
+            
+            if (data.workHistory.length > 0 && (rateChanged || hoursChanged)) {
+                let confirmMsg = '修改设置会重新计算：\n\n';
+                if (rateChanged) {
+                    confirmMsg += `• 时薪：$${oldRate.toFixed(2)} → $${newRate.toFixed(2)}\n`;
+                    confirmMsg += '  - 所有历史记录的工资\n';
+                }
+                if (hoursChanged) {
+                    confirmMsg += `• 工作时长：${oldDailyHours}小时 → ${newDailyHours}小时\n`;
+                }
+                confirmMsg += '  - 所有目标所需的天数\n\n确定要修改吗？';
+                
+                const confirmed = await showConfirm('确认修改设置', confirmMsg, '⚠️', true);
+                if (!confirmed) {
+                    return;
+                }
+            }
+            
+            // 保存姓名
+            data.userName = newName;
+            
+            // 保存时薪（无论是否改变都保存）
+            data.hourlyRate = newRate;
+            
+            // 保存工作时长（无论是否改变都保存）
+            data.dailyHours = newDailyHours;
+            
+            // 保存默认开始时间
+            data.defaultStartTime = newDefaultTime;
+            
+            // 保存惩罚率设置
+            const penaltyEnabled = document.getElementById('enablePenaltyRates').checked;
+            data.penaltyRates.enabled = penaltyEnabled;
+            
+            if (penaltyEnabled) {
+                data.penaltyRates.saturday = parseFloat(document.getElementById('saturdayRate').value);
+                data.penaltyRates.sunday = parseFloat(document.getElementById('sundayRate').value);
+                data.penaltyRates.publicHoliday = parseFloat(document.getElementById('publicHolidayRate').value);
+                
+                // 保存深夜时段设置
+                data.penaltyRates.nightShift.enabled = document.getElementById('enableNightShift').checked;
+                data.penaltyRates.nightShift.startTime = document.getElementById('nightStartTime').value;
+                data.penaltyRates.nightShift.endTime = document.getElementById('nightEndTime').value;
+                data.penaltyRates.nightShift.multiplier = parseFloat(document.getElementById('nightShiftMultiplier').value);
+            }
+            
+            // 如果时薪改变或惩罚率设置改变，重新计算所有历史记录的工资
+            if (rateChanged || penaltyEnabled !== (data.penaltyRates.enabled || false)) {
+                data.workHistory.forEach(record => {
+                    const result = calculateSalaryWithNightShift(
+                        record.startTime, 
+                        record.endTime, 
+                        record.date, 
+                        record.isPublicHoliday || false,
+                        newRate
+                    );
+                    const multiplier = getPenaltyMultiplier(record.date, record.isPublicHoliday || false);
+                    record.penaltyMultiplier = multiplier;
+                    record.salary = result.totalSalary;
+                });
+            }
+            
+            // 如果时薪或工作时长改变，重新计算所有目标天数
+            if (rateChanged || hoursChanged) {
+                data.goals.forEach(goal => {
+                    const totalHours = goal.price / newRate;
+                    goal.days = totalHours / newDailyHours;
+                });
+                
+                if (data.completedGoals) {
+                    data.completedGoals.forEach(goal => {
+                        const totalHours = goal.price / newRate;
+                        goal.days = totalHours / newDailyHours;
+                    });
+                }
+            }
+            
+            // 保存到localStorage
+            saveData(data);
+            
+            // 更新显示
+            setDefaultStartTime();
+            autoSetEndTime(); // 更新结束时间
+            renderHistory();
+            renderCompletedGoals();
+            renderGoals();
+            calculateWork();
+            
+            // 显示成功消息
+            let successMsg = '✅ 设置已保存\n\n';
+            successMsg += `姓名：${newName}\n`;
+            successMsg += `时薪：$${newRate.toFixed(2)}\n`;
+            successMsg += `工作时长：${newDailyHours}小时/天\n`;
+            successMsg += `默认开始：${newDefaultTime}`;
+            
+            showSuccessToast('✅ 设置已保存！');
+            
+            // 可选：同时显示详细信息
+            setTimeout(() => {
+                console.log(successMsg);
+            }, 100);
+        }
+
+        function toggleSettings() {
+            const content = document.getElementById('settingsContent');
+            const arrow = document.getElementById('settingsArrow');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                arrow.textContent = '▼';
+            }
+        }
+
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateInput').value = today;
+        }
+
+        function formatTime24Plus(time, isCrossDay) {
+            if (!isCrossDay) {
+                return time.replace(':', '.');
+            }
+            
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const newHour = hour + 24;
+            return newHour + '.' + minutes;
+        }
+
+        function generateCopyMessage(date) {
+            const userName = data.userName || '张三';
+            const recordsOfDay = data.workHistory.filter(r => r.date === date).sort((a, b) => {
+                return a.startTime.localeCompare(b.startTime);
+            });
+            
+            if (recordsOfDay.length === 0) return '';
+            
+            const dateObj = new Date(date + 'T00:00:00');
+            const month = dateObj.getMonth() + 1;
+            const day = dateObj.getDate();
+            const dateStr = month + '.' + (day < 10 ? '0' + day : day);
+            
+            const timePairs = recordsOfDay.map(record => {
+                const startTime = record.startTime.replace(':', '.');
+                const endTime = record.endTime.replace(':', '.');
+                
+                const startHour = parseInt(record.startTime.split(':')[0]);
+                const endHour = parseInt(record.endTime.split(':')[0]);
+                const isCrossDay = endHour < startHour || (endHour === startHour && record.endTime <= record.startTime);
+                
+                if (isCrossDay) {
+                    const [hours, minutes] = record.endTime.split(':');
+                    const newHour = parseInt(hours) + 24;
+                    return startTime + '-' + newHour + '.' + minutes;
+                }
+                
+                return startTime + '-' + endTime;
+            }).join(' ');
+            
+            return dateStr + ' ' + userName + ' ' + timePairs + ' 谢谢';
+        }
+
+        function saveHourlyRate() {
+            const newRate = parseFloat(document.getElementById('hourlyRateInput').value);
+            
+            if (isNaN(newRate) || newRate <= 0) {
+                alert('请输入有效的时薪！');
+                return;
+            }
+            
+            const oldRate = getHourlyRate();
+            
+            if (data.workHistory.length > 0 && newRate !== oldRate) {
+                if (!confirm(`修改时薪会重新计算所有历史记录的工资和目标天数。\n\n当前时薪：$${oldRate.toFixed(2)}\n新时薪：$${newRate.toFixed(2)}\n\n确定要修改吗？`)) {
+                    return;
+                }
+            }
+            
+            data.hourlyRate = newRate;
+            
+            data.workHistory.forEach(record => {
+                record.salary = record.hours * newRate;
+            });
+            
+            const dailyHours = getDailyHours();
+            data.goals.forEach(goal => {
+                const totalHours = goal.price / newRate;
+                goal.days = totalHours / dailyHours;
+            });
+            
+            if (data.completedGoals) {
+                data.completedGoals.forEach(goal => {
+                    const totalHours = goal.price / newRate;
+                    goal.days = totalHours / dailyHours;
+                });
+            }
+            
+            saveData(data);
+            renderHistory();
+            renderCompletedGoals();
+            renderGoals();
+            calculateWork();
+            
+            alert('✅ 时薪已更新为 $' + newRate.toFixed(2));
+        }
+
+        function toggleSettings() {
+            const content = document.getElementById('settingsContent');
+            const arrow = document.getElementById('settingsArrow');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                arrow.textContent = '▼';
+            }
+        }
+
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateInput').value = today;
+        }
+
+        function setDefaultStartTime() {
+            const defaultTime = data.defaultStartTime || '17:00';
+            document.getElementById('startTime').value = defaultTime;
+            document.getElementById('defaultStartTime').value = defaultTime;
+        }
+
+        function saveDefaultTime() {
+            const newDefaultTime = document.getElementById('defaultStartTime').value;
+            if (!newDefaultTime) {
+                alert('请选择默认开始时间！');
+                return;
+            }
+            data.defaultStartTime = newDefaultTime;
+            saveData(data);
+            setDefaultStartTime();
+            alert('✅ 默认开始时间已保存为 ' + newDefaultTime);
+        }
+
+        function autoSetEndTime() {
+            const startTime = document.getElementById('startTime').value;
+            if (!startTime) return;
+            
+            const dailyHours = getDailyHours();
+            const [hours, minutes] = startTime.split(':');
+            
+            // 创建一个基准日期来计算
+            const startDate = new Date(2000, 0, 1, parseInt(hours), parseInt(minutes), 0);
+            
+            // 加上工作时长
+            const endDate = new Date(startDate.getTime() + dailyHours * 60 * 60 * 1000);
+            
+            const endHours = String(endDate.getHours()).padStart(2, '0');
+            const endMinutes = String(endDate.getMinutes()).padStart(2, '0');
+            
+            document.getElementById('endTime').value = `${endHours}:${endMinutes}`;
+            calculateWork();
+        }
+
+        // 获取惩罚率倍数
+        function getPenaltyMultiplier(dateStr, isPublicHoliday) {
+            if (!data.penaltyRates.enabled) {
+                return 1; // 未启用惩罚率，返回基本倍率
+            }
+            
+            // 如果是公共假期，优先使用公共假期倍率
+            if (isPublicHoliday) {
+                return data.penaltyRates.publicHoliday;
+            }
+            
+            // 根据星期几判断
+            const date = new Date(dateStr + 'T00:00:00');
+            const dayOfWeek = date.getDay(); // 0=周日, 6=周六
+            
+            if (dayOfWeek === 6) { // 周六
+                return data.penaltyRates.saturday;
+            } else if (dayOfWeek === 0) { // 周日
+                return data.penaltyRates.sunday;
+            } else { // 周一至周五
+                return 1;
+            }
+        }
+
+        // 检查时间是否在深夜时段内
+        function isNightTime(time, nightStart, nightEnd) {
+            const [h, m] = time.split(':').map(Number);
+            const [startH, startM] = nightStart.split(':').map(Number);
+            const [endH, endM] = nightEnd.split(':').map(Number);
+            
+            const minutes = h * 60 + m;
+            const startMinutes = startH * 60 + startM;
+            const endMinutes = endH * 60 + endM;
+            
+            // 如果深夜时段跨越午夜（如22:00-06:00）
+            if (startMinutes > endMinutes) {
+                return minutes >= startMinutes || minutes < endMinutes;
+            } else {
+                return minutes >= startMinutes && minutes < endMinutes;
+            }
+        }
+
+        // 计算两个时间点之间的小时数
+        function getHoursBetween(start, end) {
+            return (end - start) / (1000 * 60 * 60);
+        }
+
+        // 分段计算工资（考虑深夜时段）
+        function calculateSalaryWithNightShift(startTime, endTime, dateStr, isPublicHoliday, baseRate) {
+            if (!data.penaltyRates.enabled || !data.penaltyRates.nightShift.enabled) {
+                // 如果未启用深夜时段，使用简单计算
+                const basePenalty = getPenaltyMultiplier(dateStr, isPublicHoliday);
+                let start = new Date('2000-01-01 ' + startTime);
+                let end = new Date('2000-01-01 ' + endTime);
+                if (end <= start) {
+                    end = new Date('2000-01-02 ' + endTime);
+                }
+                const hours = getHoursBetween(start, end);
+                return {
+                    totalSalary: hours * baseRate * basePenalty,
+                    segments: [{
+                        hours: hours,
+                        rate: baseRate * basePenalty,
+                        multiplier: basePenalty,
+                        isNight: false
+                    }]
+                };
+            }
+            
+            const nightStart = data.penaltyRates.nightShift.startTime;
+            const nightEnd = data.penaltyRates.nightShift.endTime;
+            const nightMultiplier = data.penaltyRates.nightShift.multiplier;
+            const basePenalty = getPenaltyMultiplier(dateStr, isPublicHoliday);
+            
+            let start = new Date('2000-01-01 ' + startTime);
+            let end = new Date('2000-01-01 ' + endTime);
+            if (end <= start) {
+                end = new Date('2000-01-02 ' + endTime);
+            }
+            
+            // 创建深夜时段边界
+            const [nightStartH, nightStartM] = nightStart.split(':').map(Number);
+            const [nightEndH, nightEndM] = nightEnd.split(':').map(Number);
+            
+            let nightStartDate1 = new Date('2000-01-01 ' + nightStart);
+            let nightEndDate1 = new Date('2000-01-01 ' + nightEnd);
+            
+            // 处理跨天的深夜时段
+            if (nightStartH > nightEndH || (nightStartH === nightEndH && nightStartM > nightEndM)) {
+                nightEndDate1 = new Date('2000-01-02 ' + nightEnd);
+            }
+            
+            let nightStartDate2 = new Date('2000-01-02 ' + nightStart);
+            let nightEndDate2 = new Date('2000-01-02 ' + nightEnd);
+            if (nightStartH > nightEndH || (nightStartH === nightEndH && nightStartM > nightEndM)) {
+                nightEndDate2 = new Date('2000-01-03 ' + nightEnd);
+            }
+            
+            let totalSalary = 0;
+            let segments = [];
+            let current = new Date(start);
+            
+            // 分段计算
+            while (current < end) {
+                let isInNight = false;
+                let segmentEnd;
+                
+                // 检查是否在深夜时段
+                if ((current >= nightStartDate1 && current < nightEndDate1) ||
+                    (current >= nightStartDate2 && current < nightEndDate2)) {
+                    isInNight = true;
+                    // 找到深夜时段的结束点
+                    if (current >= nightStartDate1 && current < nightEndDate1) {
+                        segmentEnd = new Date(Math.min(nightEndDate1, end));
+                    } else {
+                        segmentEnd = new Date(Math.min(nightEndDate2, end));
+                    }
+                } else {
+                    // 在非深夜时段，找到下一个深夜开始点或结束点
+                    let nextNightStart = null;
+                    if (current < nightStartDate1) {
+                        nextNightStart = nightStartDate1;
+                    } else if (current < nightStartDate2) {
+                        nextNightStart = nightStartDate2;
+                    }
+                    
+                    if (nextNightStart && nextNightStart < end) {
+                        segmentEnd = nextNightStart;
+                    } else {
+                        segmentEnd = new Date(end);
+                    }
+                }
+                
+                // 计算此段的工资
+                const segmentHours = getHoursBetween(current, segmentEnd);
+                const multiplier = isInNight ? basePenalty * nightMultiplier : basePenalty;
+                const segmentSalary = segmentHours * baseRate * multiplier;
+                
+                totalSalary += segmentSalary;
+                segments.push({
+                    hours: segmentHours,
+                    rate: baseRate * multiplier,
+                    multiplier: multiplier,
+                    isNight: isInNight
+                });
+                
+                current = new Date(segmentEnd);
+            }
+            
+            return { totalSalary, segments };
+        }
+
+        function calculateWork() {
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            const dateInput = document.getElementById('dateInput').value;
+            const isPublicHoliday = document.getElementById('isPublicHoliday').checked;
+            
+            if (!startTime || !endTime) {
+                document.getElementById('calculatedDisplay').textContent = '请输入时间';
+                return null;
+            }
+
+            let start = new Date('2000-01-01 ' + startTime);
+            let end = new Date('2000-01-01 ' + endTime);
+            
+            if (end <= start) {
+                end = new Date('2000-01-02 ' + endTime);
+            }
+
+            const hours = getHoursBetween(start, end);
+            const baseRate = getHourlyRate();
+            
+            // 计算工资（考虑深夜时段）
+            const result = calculateSalaryWithNightShift(startTime, endTime, dateInput, isPublicHoliday, baseRate);
+            const salary = result.totalSalary;
+            
+            // 获取主要倍率用于显示
+            let mainMultiplier = 1;
+            if (dateInput && data.penaltyRates.enabled) {
+                mainMultiplier = getPenaltyMultiplier(dateInput, isPublicHoliday);
+            }
+            
+            const crossDay = end.getDate() !== start.getDate() ? ' 🌙跨天' : '';
+            let rateInfo = '';
+            
+            if (data.penaltyRates.enabled) {
+                if (result.segments.length > 1) {
+                    // 有多个时段
+                    const hasNight = result.segments.some(s => s.isNight);
+                    if (hasNight && mainMultiplier !== 1) {
+                        rateInfo = ` (${mainMultiplier}x+深夜)`;
+                    } else if (hasNight) {
+                        rateInfo = ` (深夜)`;
+                    } else if (mainMultiplier !== 1) {
+                        rateInfo = ` (${mainMultiplier}x)`;
+                    }
+                } else if (mainMultiplier !== 1) {
+                    rateInfo = ` (${mainMultiplier}x)`;
+                }
+            }
+            
+            document.getElementById('calculatedDisplay').textContent = 
+                hours.toFixed(2) + '小时 / $' + salary.toFixed(2) + rateInfo + crossDay;
+            
+            return { 
+                hours, 
+                salary, 
+                multiplier: mainMultiplier,
+                segments: result.segments
+            };
+        }
+
+        document.getElementById('startTime').addEventListener('change', function() {
+            autoSetEndTime();
+        });
+        document.getElementById('endTime').addEventListener('change', calculateWork);
+
+        function addWorkRecord() {
+            const dateInput = document.getElementById('dateInput').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            
+            if (!dateInput) {
+                showErrorToast('❌ 请选择日期！');
+                return;
+            }
+            
+            if (!startTime || !endTime) {
+                showErrorToast('❌ 请输入开始和结束时间！');
+                return;
+            }
+
+            const calc = calculateWork();
+            if (!calc) {
+                return;
+            }
+            
+            const isPublicHoliday = document.getElementById('isPublicHoliday').checked;
+
+            const record = {
+                id: Date.now(),
+                date: dateInput,
+                startTime: startTime,
+                endTime: endTime,
+                hours: calc.hours,
+                salary: calc.salary,
+                isPublicHoliday: isPublicHoliday,
+                penaltyMultiplier: calc.multiplier || 1,
+                paid: false
+            };
+
+            data.workHistory.unshift(record);
+            data.totalHours += calc.hours;
+            saveData(data);
+            
+            renderHistory();
+            renderGoals();
+            
+            const todayRecords = data.workHistory.filter(r => r.date === dateInput);
+            const todayTotalHours = todayRecords.reduce((sum, r) => sum + r.hours, 0);
+            
+            const previousTodayHours = todayTotalHours - calc.hours;
+            if (todayTotalHours >= 8 && previousTodayHours < 8) {
+                setTimeout(() => {
+                    showEncouragement(todayTotalHours, todayTotalHours * getHourlyRate(), dateInput);
+                }, 300);
+            }
+            
+            document.getElementById('startTime').value = '';
+            document.getElementById('endTime').value = '';
+            document.getElementById('isPublicHoliday').checked = false;
+            document.getElementById('calculatedDisplay').textContent = '请输入时间';
+            setDefaultDate();
+            setDefaultStartTime();
+            autoSetEndTime(); // 重新设置结束时间
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyContainer');
+            
+            if (data.workHistory.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">暂无工作记录</div>';
+                document.getElementById('totalSalary').textContent = '$0.00';
+                document.getElementById('unpaidSalary').textContent = '$0.00';
+                document.getElementById('paidSalary').textContent = '$0.00';
+                return;
+            }
+
+            // 计算总工资、已收款、未收款
+            const totalSalary = data.workHistory.reduce((sum, record) => sum + record.salary, 0);
+            const paidSalary = data.workHistory.reduce((sum, record) => sum + (record.paid ? record.salary : 0), 0);
+            const unpaidSalary = totalSalary - paidSalary;
+            
+            document.getElementById('totalSalary').textContent = '$' + totalSalary.toFixed(2);
+            document.getElementById('paidSalary').textContent = '$' + paidSalary.toFixed(2);
+            document.getElementById('unpaidSalary').textContent = '$' + unpaidSalary.toFixed(2);
+
+            const groupedByDate = {};
+            data.workHistory.forEach(record => {
+                if (!groupedByDate[record.date]) {
+                    groupedByDate[record.date] = [];
+                }
+                groupedByDate[record.date].push(record);
+            });
+
+            const sortedDates = Object.keys(groupedByDate).sort((a, b) => b.localeCompare(a));
+
+            container.innerHTML = sortedDates.map(date => {
+                const records = groupedByDate[date];
+                const dateObj = new Date(date + 'T00:00:00');
+                const dateStr = dateObj.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'short' });
+                const dayTotal = records.reduce((sum, r) => sum + r.salary, 0);
+                const dayHours = records.reduce((sum, r) => sum + r.hours, 0);
+
+                const recordsHTML = records.map(record => {
+                    let rateInfo = '';
+                    let holidayTag = '';
+                    let paidTag = '';
+                    
+                    // 显示惩罚率信息
+                    if (record.penaltyMultiplier && record.penaltyMultiplier > 1) {
+                        rateInfo = ` <span style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">${record.penaltyMultiplier}x</span>`;
+                    }
+                    
+                    // 显示公共假期标记
+                    if (record.isPublicHoliday) {
+                        holidayTag = ' <span style="background: #ff9800; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">🎉假期</span>';
+                    }
+                    
+                    // 显示已收款标记
+                    if (record.paid) {
+                        paidTag = ' <span style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">✅已收款</span>';
+                    }
+                    
+                    // 标记已收款/取消收款按钮
+                    const paymentBtn = record.paid 
+                        ? `<button class="delete-btn mark-unpaid-btn" data-record-id="${record.id}" style="background: #999;">❌ 取消收款</button>`
+                        : `<button class="delete-btn mark-paid-btn" data-record-id="${record.id}" style="background: #4CAF50;">✅ 标记收款</button>`;
+                    
+                    const itemStyle = record.paid 
+                        ? 'margin-bottom: 5px; border-left-color: #4CAF50; opacity: 0.8;'
+                        : 'margin-bottom: 5px; border-left-color: #999;';
+                    
+                    return `<div class="history-item" style="${itemStyle}">
+                        <div class="history-time">⏰ ${record.startTime} - ${record.endTime}${holidayTag}${rateInfo}${paidTag}</div>
+                        <div class="history-result">
+                            <span>${record.hours.toFixed(2)} 小时</span>
+                            <span>$${record.salary.toFixed(2)}</span>
+                        </div>
+                        <div style="display: flex; gap: 5px; margin-top: 5px;">
+                            ${paymentBtn}
+                            <button class="delete-btn delete-record-btn" data-record-id="${record.id}">删除</button>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                return `<div style="margin-bottom: 15px;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                        <div style="font-weight: 600; margin-bottom: 5px;">${dateStr}</div>
+                        <div style="font-size: 14px; opacity: 0.95;">合计：${dayHours.toFixed(2)} 小时 / $${dayTotal.toFixed(2)}</div>
+                    </div>
+                    ${recordsHTML}
+                    <button class="copy-message-btn" data-date="${date}">📋 复制报工消息</button>
+                </div>`;
+            }).join('');
+        }
+
+        async function markRecordPaid(id) {
+            const record = data.workHistory.find(r => r.id === id);
+            if (!record) return;
+            
+            const message = `📅 日期：${record.date}\n⏰ 时间：${record.startTime} - ${record.endTime}\n💰 工资：$${record.salary.toFixed(2)}\n\n确认已收到这笔工资？`;
+            
+            const confirmed = await showConfirm('标记已收款', message, '✅', true);
+            
+            if (confirmed) {
+                record.paid = true;
+                saveData(data);
+                renderHistory();
+                showSuccessToast('✅ 已标记为已收款！');
+            }
+        }
+
+        async function markRecordUnpaid(id) {
+            const record = data.workHistory.find(r => r.id === id);
+            if (!record) return;
+            
+            const message = `📅 日期：${record.date}\n⏰ 时间：${record.startTime} - ${record.endTime}\n💰 工资：$${record.salary.toFixed(2)}\n\n取消已收款标记？`;
+            
+            const confirmed = await showConfirm('取消收款标记', message, '❌', true);
+            
+            if (confirmed) {
+                record.paid = false;
+                saveData(data);
+                renderHistory();
+                showSuccessToast('✅ 已取消收款标记！');
+            }
+        }
+
+        async function deleteRecord(id) {
+            const record = data.workHistory.find(r => r.id === id);
+            if (!record) return;
+            
+            const message = `📅 日期：${record.date}\n⏰ 时间：${record.startTime} - ${record.endTime}\n💰 工资：$${record.salary.toFixed(2)}`;
+            
+            const confirmed = await showConfirm('删除工作记录？', message, '🗑️', true);
+            
+            if (confirmed) {
+                data.totalHours -= record.hours;
+                data.workHistory = data.workHistory.filter(r => r.id !== id);
+                saveData(data);
+                renderHistory();
+                renderGoals();
+                showSuccessToast('✅ 删除成功！');
+            }
+        }
+
+        async function clearHistory() {
+            const confirmed = await showConfirm(
+                '清空所有记录？',
+                '这将删除所有工作记录和统计数据！\n\n此操作无法撤销。',
+                '⚠️',
+                true
+            );
+            
+            if (confirmed) {
+                data.totalHours = 0;
+                data.workHistory = [];
+                data.goals = data.goals.map(g => ({ ...g, completed: false }));
+                saveData(data);
+                renderHistory();
+                renderGoals();
+                showSuccessToast('✅ 已清空所有记录');
+            }
+        }
+
+        function renderGoals() {
+            const container = document.getElementById('goalsContainer');
+            container.innerHTML = '';
+
+            if (data.goals.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-goals">
+                        <div class="icon">🎯</div>
+                        <p>还没有设定储蓄目标<br>点击上方"添加目标"按钮开始规划你的第一个目标吧！</p>
+                    </div>
+                `;
+                document.getElementById('totalHours').textContent = '0h';
+                document.getElementById('totalEarned').textContent = '$0';
+                return;
+            }
+
+            const totalEarned = data.totalHours * getHourlyRate();
+            const availableMoney = totalEarned - (data.spentMoney || 0);
+            
+            data.goals.forEach((goal, index) => {
+                const isPriority = index === 0;
+                const calc = calculateGoalProgress(goal, isPriority ? (data.spentMoney || 0) : 0);
+                const canComplete = calc.progress >= 100 && isPriority;
+                
+                const card = document.createElement('div');
+                let cardClass = 'goal-card';
+                if (!isPriority && calc.progress >= 100) {
+                    cardClass += ' waiting';
+                }
+                card.className = cardClass;
+                
+                const priorityBadge = isPriority ? 
+                    '<span class="priority-badge priority-1">优先</span>' : 
+                    '<span class="priority-badge priority-other">待完成</span>';
+                
+                const upBtn = index > 0 ? `<button class="move-up-btn" data-goal-id="${goal.id}" style="background: #999; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">↑</button>` : '';
+                const downBtn = index < data.goals.length - 1 ? `<button class="move-down-btn" data-goal-id="${goal.id}" style="background: #999; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-left: 5px;">↓</button>` : '';
+                
+                let actionButtons = '';
+                if (canComplete) {
+                    actionButtons = `<button class="confirm-purchase-btn" data-goal-id="${goal.id}">✅ 确认购买</button><button class="edit-goal-btn" data-goal-id="${goal.id}">✏️ 编辑</button><button class="delete-goal-btn" data-goal-id="${goal.id}">🗑️ 删除</button>`;
+                } else {
+                    actionButtons = `<button class="edit-goal-btn" data-goal-id="${goal.id}">✏️ 编辑</button><button class="delete-goal-btn" data-goal-id="${goal.id}">🗑️ 删除</button>`;
+                }
+                
+                let statusHint = '';
+                if (!isPriority && calc.progress >= 100) {
+                    statusHint = '<div style="background: #FFF3E0; padding: 8px; border-radius: 6px; margin-top: 8px; font-size: 12px; color: #F57C00;">⏳ 已达成！调整为第一优先级后可确认购买</div>';
+                }
+                
+                let remainingDaysDisplay = '';
+                if (calc.progress < 100) {
+                    const motivationText = calc.remainingDays <= 1 ? '🔥 马上就要实现了！' : 
+                                         calc.remainingDays <= 3 ? '💪 再坚持几天！' :
+                                         calc.remainingDays <= 7 ? '⭐ 一周内可达成！' : '🎯 继续加油！';
+                    
+                    remainingDaysDisplay = `
+                        <div class="remaining-days-highlight">
+                            <div class="label">还需工作</div>
+                            <div class="big-number">${calc.remainingDays}</div>
+                            <div class="label">天 (${calc.remainingHours} 小时)</div>
+                            <div class="motivation">${motivationText}</div>
+                        </div>
+                    `;
+                }
+                
+                card.innerHTML = `<div class="goal-header">
+                    <div class="goal-title">${goal.icon} ${goal.name}${priorityBadge}</div>
+                    <div class="goal-status">${calc.progress.toFixed(1)}%</div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: ${Math.min(calc.progress, 100)}%"></div>
+                </div>
+                <div class="goal-details">
+                    <span>目标: ${goal.days.toFixed(2)}天 (${calc.totalHoursNeeded.toFixed(2)}小时)</span>
+                    <span>$${goal.price.toFixed(2)}</span>
+                </div>
+                ${remainingDaysDisplay}
+                <div class="goal-money">已攒: $${calc.availableMoney.toFixed(2)}</div>
+                ${statusHint}
+                <div class="goal-actions">${actionButtons}</div>
+                <div style="margin-top: 8px; text-align: center;">${upBtn}${downBtn}</div>`;
+                container.appendChild(card);
+            });
+
+            document.getElementById('totalHours').textContent = data.totalHours.toFixed(1) + 'h';
+            document.getElementById('totalEarned').textContent = '$' + totalEarned.toFixed(2);
+        }
+
+        async function confirmPurchase(goalId) {
+            const goal = data.goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            const goalIndex = data.goals.findIndex(g => g.id === goalId);
+            if (goalIndex !== 0) {
+                await showConfirm('无法购买', '只有第一优先级的目标可以确认购买！', '❌', false);
+                return;
+            }
+            
+            const totalEarned = data.totalHours * getHourlyRate();
+            const available = totalEarned - (data.spentMoney || 0);
+            const message = `💰 价格：$${goal.price.toFixed(2)}\n💵 当前余额：$${available.toFixed(2)}\n💸 购买后余额：$${(available - goal.price).toFixed(2)}`;
+            
+            const confirmed = await showConfirm(`购买 "${goal.name}"？`, message, '🎉', false);
+            
+            if (confirmed) {
+                data.spentMoney = (data.spentMoney || 0) + goal.price;
+                
+                goal.purchased = true;
+                goal.purchaseDate = new Date().toISOString();
+                data.completedGoals.push(goal);
+                data.goals = data.goals.filter(g => g.id !== goalId);
+                
+                saveData(data);
+                renderCompletedGoals();
+                renderGoals();
+                
+                setTimeout(() => {
+                    showGoalCompletionMessage(goal);
+                }, 300);
+            }
+        }
+
+        async function refundGoal(goalId) {
+            const goal = data.completedGoals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            const message = `退款后将恢复 $${goal.price.toFixed(2)} 到你的余额\n目标将重新加入储蓄列表`;
+            const confirmed = await showConfirm(
+                `退款"${goal.name}"？`,
+                message,
+                '↩️',
+                false
+            );
+            
+            if (confirmed) {
+                data.spentMoney = Math.max(0, (data.spentMoney || 0) - goal.price);
+                
+                data.completedGoals = data.completedGoals.filter(g => g.id !== goalId);
+                
+                goal.purchased = false;
+                goal.completed = false;
+                delete goal.purchaseDate;
+                data.goals.push(goal);
+                
+                saveData(data);
+                renderCompletedGoals();
+                renderGoals();
+                
+                showSuccessToast('✅ 已退款 $' + goal.price.toFixed(2));
+            }
+        }
+
+        function showGoalCompletionMessage(goal) {
+            document.getElementById('encouragementEmoji').textContent = '🎊';
+            document.getElementById('encouragementTitle').textContent = '恭喜完成目标！';
+            document.getElementById('encouragementMessage').textContent = `太棒了！你已经成功购买"${goal.name}"！花费$${goal.price.toFixed(2)}，继续为下一个目标加油！`;
+            
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('encouragementPopup').classList.add('show');
+        }
+
+        function calculateGoalProgress(goal, usedMoney = 0) {
+            const dailyHours = getDailyHours();
+            const totalHoursNeeded = goal.days * dailyHours;
+            const totalMoneyNeeded = totalHoursNeeded * getHourlyRate();
+            const earnedSoFar = data.totalHours * getHourlyRate();
+            
+            const availableMoney = Math.max(0, earnedSoFar - usedMoney);
+            const progress = Math.min(100, (availableMoney / totalMoneyNeeded) * 100);
+            const remainingMoney = Math.max(0, totalMoneyNeeded - availableMoney);
+            const remainingHours = Math.max(0, Math.ceil(remainingMoney / getHourlyRate()));
+            const remainingDays = Math.max(0, (remainingHours / dailyHours).toFixed(1));
+            
+            return {
+                progress,
+                totalMoneyNeeded,
+                availableMoney,
+                remainingMoney,
+                remainingHours,
+                remainingDays,
+                totalHoursNeeded
+            };
+        }
+
+        function exportData() {
+            try {
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([dataBlob], 'data.json')] })) {
+                    const file = new File([dataBlob], `工作追踪器数据_${new Date().toISOString().split('T')[0]}.json`, { type: 'application/json' });
+                    navigator.share({
+                        files: [file],
+                        title: '工作追踪器数据',
+                        text: '导出的工作记录数据'
+                    }).then(() => {
+                        showSuccessToast('✅ 数据已导出！');
+                    }).catch((error) => {
+                        fallbackDownload(dataStr);
+                    });
+                } else {
+                    fallbackDownload(dataStr);
+                }
+            } catch (error) {
+                showErrorToast('❌ 导出失败：' + error.message);
+            }
+        }
+
+        async function copyDataToClipboard() {
+            try {
+                const dataStr = JSON.stringify(data, null, 2);
+                await navigator.clipboard.writeText(dataStr);
+                
+                const message = `数据已复制到剪贴板！\n\n💾 保存方法：\n1. 打开"备忘录"App\n2. 新建备忘录\n3. 长按粘贴数据\n4. 保存备忘录\n\n恢复时：复制备忘录内容，点击"导入数据"，粘贴即可`;
+                await showConfirm('✅ 复制成功！', message, '📋', false);
+                
+            } catch (error) {
+                const dataStr = JSON.stringify(data, null, 2);
+                showDataForManualCopy(dataStr);
+            }
+        }
+
+        async function fallbackDownload(dataStr) {
+            try {
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                const fileName = `工作追踪器数据_${new Date().toISOString().split('T')[0]}.json`;
+                link.href = url;
+                link.download = fileName;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                
+                link.click();
+                
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 100);
+                
+                const message = `文件名：${fileName}\n\n📂 请在以下位置查找：\n• Safari浏览器 → 下载按钮（↓）\n• 文件App → 下载文件夹\n• 设置 → Safari → 下载项`;
+                await showConfirm('✅ 导出成功！', message, '📥', false);
+                
+            } catch (error) {
+                showDataForManualCopy(dataStr);
+            }
+        }
+
+        async function showDataForManualCopy(dataStr) {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.7);
+                z-index: 3000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            `;
+            
+            const container = document.createElement('div');
+            container.style.cssText = `
+                background: white;
+                border-radius: 20px;
+                padding: 25px;
+                max-width: 500px;
+                width: 100%;
+                max-height: 80vh;
+                display: flex;
+                flex-direction: column;
+            `;
+            
+            const title = document.createElement('h3');
+            title.textContent = '📋 手动复制数据';
+            title.style.cssText = 'margin: 0 0 15px 0; color: #333; font-size: 18px;';
+            
+            const instruction = document.createElement('p');
+            instruction.textContent = '长按下方文本框，选择"全选"，然后"拷贝"：';
+            instruction.style.cssText = 'margin: 0 0 10px 0; color: #666; font-size: 14px;';
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = dataStr;
+            textarea.readOnly = true;
+            textarea.style.cssText = `
+                width: 100%;
+                height: 300px;
+                padding: 12px;
+                font-size: 11px;
+                font-family: monospace;
+                border: 2px solid #667eea;
+                border-radius: 10px;
+                resize: none;
+                margin-bottom: 15px;
+            `;
+            
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.cssText = 'display: flex; gap: 10px;';
+            
+            const copyBtn = document.createElement('button');
+            copyBtn.textContent = '📋 复制';
+            copyBtn.style.cssText = `
+                flex: 1;
+                padding: 12px;
+                background: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+                font-weight: 600;
+            `;
+            copyBtn.onclick = async () => {
+                try {
+                    await navigator.clipboard.writeText(dataStr);
+                    copyBtn.textContent = '✅ 已复制！';
+                    setTimeout(() => {
+                        document.body.removeChild(overlay);
+                        showSuccessToast('✅ 数据已复制到剪贴板');
+                    }, 1000);
+                } catch (e) {
+                    textarea.select();
+                    showSuccessToast('请手动选择并复制');
+                }
+            };
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = '关闭';
+            closeBtn.style.cssText = `
+                flex: 1;
+                padding: 12px;
+                background: #e0e0e0;
+                color: #666;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+                font-weight: 600;
+            `;
+            closeBtn.onclick = () => {
+                document.body.removeChild(overlay);
+            };
+            
+            buttonContainer.appendChild(copyBtn);
+            buttonContainer.appendChild(closeBtn);
+            container.appendChild(title);
+            container.appendChild(instruction);
+            container.appendChild(textarea);
+            container.appendChild(buttonContainer);
+            overlay.appendChild(container);
+            document.body.appendChild(overlay);
+            
+            textarea.select();
+        }
+
+        function importData() {
+            document.getElementById('importFileInput').click();
+        }
+
+        async function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (!importedData.workHistory || !importedData.goals) {
+                        await showConfirm('导入失败', '文件格式不正确！\n请确保是从本应用导出的数据文件。', '❌', false);
+                        return;
+                    }
+
+                    const message = `文件名：${file.name}\n工作记录：${importedData.workHistory.length} 条\n储蓄目标：${importedData.goals.length} 个\n\n确定要导入并覆盖当前数据吗？`;
+                    const confirmed = await showConfirm('确认导入数据', message, '📥', false);
+                    
+                    if (confirmed) {
+                        data = importedData;
+                        saveData(data);
+                        setHourlyRateDisplay();
+                        setUserNameDisplay();
+                        setDailyHoursDisplay();
+                        renderHistory();
+                        renderCompletedGoals();
+                        renderGoals();
+                        showSuccessToast('✅ 数据导入成功！');
+                    }
+                } catch (error) {
+                    await showConfirm('导入失败', '文件解析失败：' + error.message, '❌', false);
+                }
+            };
+            
+            reader.onerror = function() {
+                showErrorToast('❌ 文件读取失败');
+            };
+            
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        document.getElementById('addWorkRecordBtn').addEventListener('click', addWorkRecord);
+        document.getElementById('clearHistoryBtn').addEventListener('click', clearHistory);
+        document.getElementById('closeEncouragementBtn').addEventListener('click', closeEncouragement);
+        document.getElementById('overlay').addEventListener('click', closePopups);
+        document.getElementById('addGoalBtn').addEventListener('click', () => openGoalForm());
+        document.getElementById('cancelGoalBtn').addEventListener('click', closeGoalForm);
+        document.getElementById('saveGoalBtn').addEventListener('click', saveGoal);
+        document.getElementById('settingsToggle').addEventListener('click', toggleSettings);
+        document.getElementById('saveAllSettingsBtn').addEventListener('click', saveAllSettings);
+        document.getElementById('exportDataBtn').addEventListener('click', exportData);
+        document.getElementById('copyDataBtn').addEventListener('click', copyDataToClipboard);
+        document.getElementById('importDataBtn').addEventListener('click', importData);
+        document.getElementById('importFileInput').addEventListener('change', handleFileImport);
+        document.getElementById('goalPrice').addEventListener('input', calculateGoalDays);
+        
+        // 惩罚率相关事件监听器
+        document.getElementById('enablePenaltyRates').addEventListener('change', togglePenaltyRatesSettings);
+        document.getElementById('enableNightShift').addEventListener('change', toggleNightShiftSettings);
+        document.getElementById('isPublicHoliday').addEventListener('change', calculateWork);
+        document.getElementById('dateInput').addEventListener('change', calculateWork);
+
+
+        function handleButtonClick(e) {
+            const target = e.target;
+            
+            if (target.classList.contains('mark-paid-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = parseInt(target.getAttribute('data-record-id'));
+                markRecordPaid(id);
+                return;
+            }
+            
+            if (target.classList.contains('mark-unpaid-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = parseInt(target.getAttribute('data-record-id'));
+                markRecordUnpaid(id);
+                return;
+            }
+            
+            if (target.classList.contains('delete-record-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = parseInt(target.getAttribute('data-record-id'));
+                deleteRecord(id);
+                return;
+            }
+            
+            if (target.classList.contains('copy-message-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const date = target.getAttribute('data-date');
+                const message = generateCopyMessage(date);
+                
+                navigator.clipboard.writeText(message).then(() => {
+                    const originalText = target.textContent;
+                    target.textContent = '✅ 已复制';
+                    target.classList.add('copy-success');
+                    
+                    setTimeout(() => {
+                        target.textContent = originalText;
+                        target.classList.remove('copy-success');
+                    }, 2000);
+                }).catch(err => {
+                    alert('复制失败，请手动复制：\n' + message);
+                });
+                return;
+            }
+            
+            if (target.classList.contains('refund-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = parseInt(target.getAttribute('data-goal-id'));
+                refundGoal(id);
+                return;
+            }
+            
+            if (target.classList.contains('confirm-purchase-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = parseInt(target.getAttribute('data-goal-id'));
+                confirmPurchase(id);
+                return;
+            }
+            
+            if (target.classList.contains('edit-goal-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = parseInt(target.getAttribute('data-goal-id'));
+                openGoalForm(id);
+                return;
+            }
+            
+            if (target.classList.contains('delete-goal-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = parseInt(target.getAttribute('data-goal-id'));
+                deleteGoal(id);
+                return;
+            }
+            
+            if (target.classList.contains('move-up-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = parseInt(target.getAttribute('data-goal-id'));
+                moveGoalUp(id);
+                return;
+            }
+            
+            if (target.classList.contains('move-down-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = parseInt(target.getAttribute('data-goal-id'));
+                moveGoalDown(id);
+                return;
+            }
+        }
+        
+        document.body.addEventListener('click', handleButtonClick);
+        document.body.addEventListener('touchend', handleButtonClick);
+
+        setDefaultDate();
+        setDefaultStartTime();
+        autoSetEndTime(); // 初始化结束时间
+        setHourlyRateDisplay();
+        setUserNameDisplay();
+        setDailyHoursDisplay();
+        setPenaltyRatesDisplay(); // 初始化惩罚率设置显示
+        renderHistory();
+        renderCompletedGoals();
+        renderGoals();
+    </script>
+</body>
+</html>
