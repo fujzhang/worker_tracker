@@ -5,7 +5,7 @@
 
 ## 📱 在线使用
 
-访问链接: `https://fujzhang.github.io/worker_tracker/`
+访问链接: https://fujzhang.github.io/worker_tracker/
 
 > 💡 建议将此页面添加到手机主屏幕,像App一样使用!
 
