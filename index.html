@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>工作进度追踪器</title>
+    <title>今日上班</title>
+    <link rel="icon" type="image/png" href="icon.png">
     <style>
         * {
             margin: 0;
@@ -15,14 +16,19 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: radial-gradient(circle at top left, #ffffff 0%, #fdffe1 20%, #bff5ff 70%, #3ae8ff 100%);
             min-height: 100vh;
             padding: 20px;
         }
 
         .container {
             max-width: 500px;
-            margin: 0 auto;
+            margin: 0 auto;          /* 让它垂直居中一点 */
+            background: radial-gradient(circle at top left, #ffffff 0%, #fdffe1 20%, #bff5ff 70%, #3ae8ff 100%);
+            border-radius: 40px;         /* 圆角 */
+            box-shadow: 0 10px 30px rgba(58, 232, 255, 0.2); /* 柔光阴影 */
+            padding: 40px;               /* 内边距 */
+            text-align: center;          /* 内容居中 */
         }
 
         .header {
@@ -35,7 +41,7 @@
 
         .header h1 {
             font-size: 24px;
-            color: #667eea;
+            color: #000000;
             margin-bottom: 15px;
             text-align: center;
         }
@@ -91,7 +97,7 @@
         .calculated-info .value {
             font-size: 18px;
             font-weight: 700;
-            color: #667eea;
+            color: #000000;
         }
 
         .work-history {
@@ -130,11 +136,11 @@
         }
 
         .history-item {
-            background: #f8f9fa;
+            background: #ddefff;
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 10px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #636249;
         }
 
         .history-date {
@@ -155,7 +161,7 @@
             justify-content: space-between;
             font-size: 14px;
             font-weight: 600;
-            color: #667eea;
+            color: #41016b;
         }
 
         .delete-btn {
@@ -173,13 +179,13 @@
         }
 
         .delete-btn:active {
-            background: #ff5252;
+            background: radial-gradient(circle at top left, #ffffff 0%, #fdffe1 20%, #bff5ff 70%, #3ae8ff 100%);
             transform: scale(0.95);
         }
 
         .total-summary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: radial-gradient(circle at top left, #ffffff 0%, #fdffe1 20%, #bff5ff 70%, #3ae8ff 100%);
+            color: #0099cc;
             padding: 20px;
             border-radius: 12px;
             text-align: center;
@@ -201,8 +207,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: radial-gradient(circle at top left, #ffffff 0%, #fdffe1 20%, #bff5ff 70%, #3ae8ff 100%);
+            color: #0099cc;
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -241,7 +247,7 @@
 
         .encouragement-popup button {
             background: white;
-            color: #667eea;
+            color: #0099cc;
             border: none;
             padding: 12px 30px;
             border-radius: 25px;
@@ -350,7 +356,7 @@
         }
 
         .confirm-ok-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #bff5ff 0%, #3ae8ff 100%);
             color: white;
         }
 
@@ -421,7 +427,7 @@
             cursor: pointer;
             text-align: center;
             font-size: 13px;
-            color: #667eea;
+            color: #0099cc;
             border: 1px solid #e0e0e0;
         }
 
@@ -441,7 +447,7 @@
         .add-goal-btn {
             padding: 8px 15px;
             background: #4CAF50;
-            color: white;
+            color: #ffffff;
             border: none;
             border-radius: 8px;
             font-size: 14px;
@@ -481,12 +487,12 @@
         }
 
         .edit-goal-btn {
-            background: #667eea;
+            background: #3a78ff;
             color: white;
         }
 
         .edit-goal-btn:active {
-            background: #5568d3;
+            background: #b5ccff;
         }
 
         .delete-goal-btn {
@@ -532,17 +538,17 @@
         }
 
         .priority-1 {
-            background: #4CAF50;
+            background: #ff0000;
             color: white;
         }
 
         .priority-other {
-            background: #FFA726;
+            background: #ff782b;
             color: white;
         }
 
         .copy-message-btn {
-            background: #667eea;
+            background: #33cbdf;
             color: white;
             border: none;
             padding: 8px 15px;
@@ -677,11 +683,11 @@
         .add-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: radial-gradient(circle at top left, #00d9ff 40%, #0044ff 100%);
+            color: rgb(255, 255, 255);
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 19px;
             font-weight: 600;
             cursor: pointer;
         }
@@ -694,7 +700,7 @@
         }
 
         .stat-item {
-            background: white;
+            background: radial-gradient(circle at top left, #ffffff 0%, #fdffe1 20%, #bff5ff 70%, #3ae8ff 100%);
             padding: 12px;
             border-radius: 8px;
             text-align: center;
@@ -709,7 +715,7 @@
         .stat-value {
             font-size: 20px;
             font-weight: 700;
-            color: #667eea;
+            color: #0099cc;
         }
 
         .goal-card {
@@ -748,7 +754,7 @@
 
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, #bfffc8 0%, #00ff2a 100%);
             border-radius: 10px;
             transition: width 0.5s ease;
         }
@@ -764,14 +770,14 @@
         .goal-money {
             font-size: 16px;
             font-weight: 600;
-            color: #667eea;
+            color: #0099cc;
             text-align: center;
             margin-top: 10px;
         }
 
         .remaining-days-highlight {
-            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
-            color: white;
+            background: radial-gradient(circle at top left, #ffffff 0%, #fdffe1 20%, #bff5ff 70%, #3ae8ff 100%);
+            color: #0099cc;
             padding: 15px;
             border-radius: 12px;
             margin: 10px 0;
@@ -837,14 +843,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>💰 工作进度追踪器</h1>
+            <h1>💰 今日上班</h1>
 
             <div class="input-section">
                 <div class="input-group">
                     <label>日期：</label>
                     <input type="date" id="dateInput">
                 </div>
-                <div class="input-group" style="margin-bottom: 5px;">
+                <div class="input-group" id="publicHolidayOption" style="margin-bottom: 5px; display: none;">
                     <label style="display: flex; align-items: center; cursor: pointer;">
                         <input type="checkbox" id="isPublicHoliday" style="width: 18px; height: 18px; margin-right: 8px; cursor: pointer;">
                         <span style="font-size: 13px;">🎉 公共假期 (Public Holiday)</span>
@@ -853,11 +859,27 @@
                 <div class="time-inputs">
                     <div>
                         <label style="font-size: 12px; color: #888;">开始时间</label>
-                        <input type="time" id="startTime">
+                        <input type="time" id="startTime" step="60">
                     </div>
                     <div>
                         <label style="font-size: 12px; color: #888;">结束时间</label>
-                        <input type="time" id="endTime">
+                        <input type="time" id="endTime" step="60">
+                    </div>
+                </div>
+                <div class="input-group" style="margin-top: 10px; margin-bottom: 5px;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="hasBreak" style="width: 18px; height: 18px; margin-right: 8px; cursor: pointer;">
+                        <span style="font-size: 13px;">⏸️ 有休息时间</span>
+                    </label>
+                </div>
+                <div class="time-inputs" id="breakTimeInputs" style="display: none;">
+                    <div>
+                        <label style="font-size: 12px; color: #888;">休息开始</label>
+                        <input type="time" id="breakStartTime" step="60">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: #888;">休息结束</label>
+                        <input type="time" id="breakEndTime" step="60">
                     </div>
                 </div>
                 <div class="calculated-info">
@@ -885,9 +907,39 @@
                     </div>
                     <div class="settings-row">
                         <label>🕐 默认上班</label>
-                        <input type="time" id="defaultStartTime">
+                        <input type="time" id="defaultStartTime" step="60">
                     </div>
-                    
+                    <div class="settings-row">
+                        <label style="display: flex; align-items: center; cursor: pointer; flex: 1;">
+                            <input type="checkbox" id="defaultHasBreak" style="width: 18px; height: 18px; margin-right: 8px; cursor: pointer;">
+                            <span style="font-size: 13px;">⏸️ 默认有休息</span>
+                        </label>
+                    </div>
+                    <div id="defaultBreakSettings" style="display: none;">
+                        <div class="settings-row">
+                            <label>休息开始</label>
+                            <input type="time" id="defaultBreakStart" step="60">
+                        </div>
+                        <div class="settings-row">
+                            <label>休息结束</label>
+                            <input type="time" id="defaultBreakEnd" step="60">
+                        </div>
+                    </div>
+
+                    <!-- 收入周期管理 -->
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #e0e0e0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 14px; font-weight: 600;">💰 收入周期管理</span>
+                            <button id="addPeriodBtn" style="padding: 5px 12px; background: radial-gradient(circle at top left, #00d9ff 40%, #0044ff 100%); color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer;">+ 添加周期</button>
+                        </div>
+                        <div style="font-size: 12px; color: #252525; margin-bottom: 10px; line-height: 1.5;">
+                            自定义收入周期，每个周期可以有不同的天数
+                        </div>
+                        <div id="customPeriodsList" style="max-height: 300px; overflow-y: auto;">
+                            <!-- 周期列表将在这里动态生成 -->
+                        </div>
+                    </div>
+
                     <!-- 墨尔本惩罚率设置 -->
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #e0e0e0;">
                         <div class="settings-row" style="margin-bottom: 15px;">
@@ -971,12 +1023,12 @@
                                     
                                     <div class="settings-row" style="margin-bottom: 8px;">
                                         <label style="font-size: 12px;">开始</label>
-                                        <input type="time" id="nightStartTime" value="22:00">
+                                        <input type="time" id="nightStartTime" value="22:00" step="60">
                                     </div>
                                     
                                     <div class="settings-row" style="margin-bottom: 8px;">
                                         <label style="font-size: 12px;">结束</label>
-                                        <input type="time" id="nightEndTime" value="06:00">
+                                        <input type="time" id="nightEndTime" value="06:00" step="60">
                                     </div>
                                     
                                     <div class="settings-row">
@@ -1014,6 +1066,23 @@
                     📋 工作记录
                     <button class="delete-btn" id="clearHistoryBtn">清空记录</button>
                 </h2>
+
+                <!-- 查看模式切换 -->
+                <div style="display: flex; gap: 5px; margin-bottom: 15px; background: radial-gradient(circle at top left, #ffffff 0%, #f8ff90 20%, #bff5ff 70%, #3ae8ff 100%); padding: 5px; border-radius: 8px;">
+                    <button class="view-mode-btn" data-mode="current" style="flex: 1; padding: 8px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; background: white; color: #0099cc;">当前</button>
+                    <button class="view-mode-btn" data-mode="period" style="flex: 1; padding: 8px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; background: transparent; color: #666;">本次收入</button>
+                    <button class="view-mode-btn" data-mode="total" style="flex: 1; padding: 8px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; background: transparent; color: #666;">总计</button>
+                </div>
+
+                <!-- 收入周期选择器（仅在本次收入模式显示） -->
+                <div id="periodSelector" style="display: none; margin-bottom: 15px; background: #f8f9fa; padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 13px; color: #666; margin-bottom: 8px;">选择收入周期：</div>
+                    <select id="paymentPeriodSelect" style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px;">
+                        <option value="">请选择收入周期</option>
+                    </select>
+                    <button id="addPaymentBtn" style="width: 100%; margin-top: 8px; padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer;">💰 添加收入记录</button>
+                </div>
+
                 <div class="total-summary">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
                         <div>
@@ -1118,11 +1187,31 @@
         </div>
         <div class="form-group" style="background: #f8f9fa; padding: 12px; border-radius: 8px;">
             <div style="font-size: 13px; color: #666; margin-bottom: 5px;">📊 自动计算：</div>
-            <div id="goalCalculation" style="font-size: 14px; color: #667eea; font-weight: 600;">请输入价格</div>
+            <div id="goalCalculation" style="font-size: 14px; color: #666; font-weight: 500;">请输入价格</div>
         </div>
         <div class="form-actions">
             <button class="cancel-btn" id="cancelGoalBtn">取消</button>
             <button class="save-btn" id="saveGoalBtn">保存</button>
+        </div>
+    </div>
+
+    <div class="goal-form-popup" id="periodFormPopup">
+        <h3 id="periodFormTitle">添加收入周期</h3>
+        <div class="form-group">
+            <label>周期名称：</label>
+            <input type="text" id="periodLabel" placeholder="例如：周期1、第一期工资">
+        </div>
+        <div class="form-group">
+            <label>起始日期：</label>
+            <input type="date" id="periodStartDate">
+        </div>
+        <div class="form-group">
+            <label>结束日期：</label>
+            <input type="date" id="periodEndDate">
+        </div>
+        <div class="form-actions">
+            <button class="cancel-btn" id="cancelPeriodBtn">取消</button>
+            <button class="save-btn" id="savePeriodBtn">保存</button>
         </div>
     </div>
 
@@ -1265,6 +1354,7 @@
         function closePopups() {
             closeEncouragement();
             closeGoalForm();
+            closePeriodForm();
         }
 
         function renderCompletedGoals() {
@@ -1489,7 +1579,7 @@
                         return goal;
                     });
                 }
-                // 为历史记录添加isPublicHoliday和paid字段
+                // 为历史记录添加isPublicHoliday、paid和休息时间字段
                 if (data.workHistory) {
                     data.workHistory = data.workHistory.map(record => {
                         if (record.isPublicHoliday === undefined) {
@@ -1498,21 +1588,93 @@
                         if (record.paid === undefined) {
                             record.paid = false;
                         }
+                        if (record.hasBreak === undefined) {
+                            record.hasBreak = false;
+                        }
+                        if (record.breakStartTime === undefined) {
+                            record.breakStartTime = null;
+                        }
+                        if (record.breakEndTime === undefined) {
+                            record.breakEndTime = null;
+                        }
+                        return record;
+                    });
+                }
+                // 添加默认休息时间设置
+                if (data.defaultBreak === undefined) {
+                    data.defaultBreak = {
+                        enabled: false,
+                        startTime: '15:00',
+                        endTime: '17:00'
+                    };
+                }
+                // 添加收入记录系统
+                if (data.paymentRecords === undefined) {
+                    data.paymentRecords = [];
+                }
+                // 添加自定义收入周期列表
+                if (data.customPeriods === undefined) {
+                    data.customPeriods = [];
+                }
+                // 迁移旧的固定间隔配置到自定义周期（如果存在）
+                if (data.paymentPeriod && data.paymentPeriod.startDate && data.customPeriods.length === 0) {
+                    // 旧版本数据迁移：根据旧配置生成一些初始周期
+                    const intervalDays = data.paymentPeriod.intervalDays || 14;
+                    const startDate = new Date(data.paymentPeriod.startDate + 'T00:00:00');
+                    const today = new Date();
+
+                    let periodStart = new Date(startDate);
+                    let index = 1;
+                    while (periodStart <= today) {
+                        const periodEnd = new Date(periodStart);
+                        periodEnd.setDate(periodEnd.getDate() + intervalDays - 1);
+
+                        data.customPeriods.push({
+                            id: Date.now() + index,
+                            startDate: periodStart.toISOString().split('T')[0],
+                            endDate: periodEnd.toISOString().split('T')[0],
+                            label: `周期${index}`
+                        });
+
+                        periodStart = new Date(periodEnd);
+                        periodStart.setDate(periodStart.getDate() + 1);
+                        index++;
+                    }
+                }
+                // 移除旧的paymentPeriod配置
+                delete data.paymentPeriod;
+                // 添加当前查看模式
+                if (data.currentViewMode === undefined) {
+                    data.currentViewMode = 'current';  // current, period, total
+                }
+                // 移除旧的paid字段逻辑，使用新的收入记录系统
+                if (data.workHistory) {
+                    data.workHistory = data.workHistory.map(record => {
+                        // 移除旧的paid字段
+                        delete record.paid;
                         return record;
                     });
                 }
                 return data;
             }
-            return { 
-                totalHours: 0, 
+            return {
+                totalHours: 0,
                 goals: [],
                 completedGoals: [],
                 workHistory: [],
+                paymentRecords: [],
+                customPeriods: [],
+                currentViewMode: 'current',
                 defaultStartTime: '17:00',
                 hourlyRate: DEFAULT_HOURLY_RATE,
                 userName: '张三',
                 dailyHours: DEFAULT_HOURS_PER_DAY,
                 spentMoney: 0,
+                defaultBreak: {
+                    enabled: false,
+                    startTime: '15:00',
+                    endTime: '17:00'
+                },
                 penaltyRates: {
                     enabled: false,
                     saturday: 1.5,
@@ -1578,12 +1740,415 @@
             const enabled = document.getElementById('enablePenaltyRates').checked;
             const settingsDiv = document.getElementById('penaltyRatesSettings');
             settingsDiv.style.display = enabled ? 'block' : 'none';
+
+            // 控制公共假日选项的显示
+            const publicHolidayOption = document.getElementById('publicHolidayOption');
+            if (publicHolidayOption) {
+                publicHolidayOption.style.display = enabled ? 'block' : 'none';
+            }
         }
 
         function toggleNightShiftSettings() {
             const enabled = document.getElementById('enableNightShift').checked;
             const settingsDiv = document.getElementById('nightShiftSettings');
             settingsDiv.style.display = enabled ? 'block' : 'none';
+        }
+
+        function setDefaultBreakDisplay() {
+            // 设置默认休息时间开关状态
+            document.getElementById('defaultHasBreak').checked = data.defaultBreak.enabled || false;
+
+            // 设置默认休息时间
+            document.getElementById('defaultBreakStart').value = data.defaultBreak.startTime || '15:00';
+            document.getElementById('defaultBreakEnd').value = data.defaultBreak.endTime || '17:00';
+
+            // 根据开关状态显示/隐藏设置
+            toggleDefaultBreakSettings();
+        }
+
+        function toggleDefaultBreakSettings() {
+            const enabled = document.getElementById('defaultHasBreak').checked;
+            const settingsDiv = document.getElementById('defaultBreakSettings');
+            settingsDiv.style.display = enabled ? 'block' : 'none';
+        }
+
+        function setDefaultBreakTime() {
+            // 如果启用了默认休息时间，则自动填充
+            if (data.defaultBreak.enabled) {
+                document.getElementById('hasBreak').checked = true;
+                document.getElementById('breakStartTime').value = data.defaultBreak.startTime;
+                document.getElementById('breakEndTime').value = data.defaultBreak.endTime;
+                document.getElementById('breakTimeInputs').style.display = 'grid';
+            }
+        }
+
+        // 渲染自定义周期列表
+        function renderCustomPeriods() {
+            const listDiv = document.getElementById('customPeriodsList');
+            if (!listDiv) return;
+
+            if (data.customPeriods.length === 0) {
+                listDiv.innerHTML = '<div style="text-align: center; color: #999; padding: 20px; font-size: 12px;">暂无周期，点击"+ 添加周期"创建第一个收入周期</div>';
+                return;
+            }
+
+            const sortedPeriods = [...data.customPeriods].sort((a, b) => {
+                return new Date(b.startDate) - new Date(a.startDate); // 最新的在前面
+            });
+
+            listDiv.innerHTML = sortedPeriods.map(period => {
+                const startDate = new Date(period.startDate + 'T00:00:00');
+                const endDate = new Date(period.endDate + 'T00:00:00');
+                const days = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+                return `
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 3px;">${period.label || '未命名周期'}</div>
+                            <div style="font-size: 11px; color: #666;">${formatDateShort(startDate)} - ${formatDateShort(endDate)} (${days}天)</div>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="edit-period-btn" data-period-id="${period.id}" style="padding: 4px 8px; background: white; border: 1px solid #ddd; border-radius: 4px; font-size: 11px; cursor: pointer;">编辑</button>
+                            <button class="delete-period-btn" data-period-id="${period.id}" style="padding: 4px 8px; background: white; border: 1px solid #ffcdd2; color: #d32f2f; border-radius: 4px; font-size: 11px; cursor: pointer;">删除</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        let editingPeriodId = null;
+
+        // 显示添加周期对话框
+        function showAddPeriodDialog() {
+            editingPeriodId = null;
+            document.getElementById('periodFormTitle').textContent = '添加收入周期';
+            document.getElementById('periodLabel').value = `周期${data.customPeriods.length + 1}`;
+            document.getElementById('periodStartDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('periodEndDate').value = new Date().toISOString().split('T')[0];
+
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('periodFormPopup').classList.add('show');
+        }
+
+        // 编辑周期
+        function editCustomPeriod(periodId) {
+            const period = data.customPeriods.find(p => p.id == periodId);
+            if (!period) return;
+
+            editingPeriodId = periodId;
+            document.getElementById('periodFormTitle').textContent = '编辑收入周期';
+            document.getElementById('periodLabel').value = period.label;
+            document.getElementById('periodStartDate').value = period.startDate;
+            document.getElementById('periodEndDate').value = period.endDate;
+
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('periodFormPopup').classList.add('show');
+        }
+
+        // 保存周期
+        function savePeriod() {
+            const label = document.getElementById('periodLabel').value.trim();
+            const startDate = document.getElementById('periodStartDate').value;
+            const endDate = document.getElementById('periodEndDate').value;
+
+            if (!label) {
+                showErrorToast('❌ 请输入周期名称！');
+                return;
+            }
+
+            if (!startDate) {
+                showErrorToast('❌ 请选择起始日期！');
+                return;
+            }
+
+            if (!endDate) {
+                showErrorToast('❌ 请选择结束日期！');
+                return;
+            }
+
+            if (new Date(endDate) < new Date(startDate)) {
+                showErrorToast('❌ 结束日期不能早于起始日期！');
+                return;
+            }
+
+            if (editingPeriodId) {
+                // 编辑现有周期
+                const period = data.customPeriods.find(p => p.id == editingPeriodId);
+                if (period) {
+                    period.label = label;
+                    period.startDate = startDate;
+                    period.endDate = endDate;
+                }
+            } else {
+                // 添加新周期
+                const period = {
+                    id: Date.now().toString(),
+                    label: label,
+                    startDate: startDate,
+                    endDate: endDate
+                };
+                data.customPeriods.push(period);
+            }
+
+            saveData(data);
+            renderCustomPeriods();
+            updatePaymentPeriodSelector();
+            closePeriodForm();
+            showSuccessToast(editingPeriodId ? '✅ 周期更新成功！' : '✅ 周期添加成功！');
+        }
+
+        // 关闭周期表单
+        function closePeriodForm() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('periodFormPopup').classList.remove('show');
+            editingPeriodId = null;
+        }
+
+        // 删除周期
+        function deleteCustomPeriod(periodId) {
+            if (!confirm('确定要删除这个周期吗？\n\n删除后，该周期的支付记录仍会保留。')) {
+                return;
+            }
+
+            data.customPeriods = data.customPeriods.filter(p => p.id != periodId);
+            saveData(data);
+            renderCustomPeriods();
+            updatePaymentPeriodSelector();
+        }
+
+        // 生成收入周期列表（用于选择器）
+        function generatePaymentPeriods() {
+            if (!data.customPeriods || data.customPeriods.length === 0) {
+                return [];
+            }
+
+            // 返回排序后的周期列表（最新的在前面）
+            return [...data.customPeriods]
+                .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
+                .map((period, idx) => {
+                    const startDate = new Date(period.startDate + 'T00:00:00');
+                    const endDate = new Date(period.endDate + 'T00:00:00');
+                    return {
+                        index: data.customPeriods.length - idx,
+                        startDate: period.startDate,
+                        endDate: period.endDate,
+                        label: `${period.label} (${formatDateShort(startDate)} - ${formatDateShort(endDate)})`
+                    };
+                });
+        }
+
+        function formatDateShort(date) {
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            return `${month}.${day}`;
+        }
+
+        // 切换查看模式
+        function switchViewMode(mode) {
+            data.currentViewMode = mode;
+            saveData(data);
+
+            // 更新按钮样式
+            document.querySelectorAll('.view-mode-btn').forEach(btn => {
+                if (btn.getAttribute('data-mode') === mode) {
+                    btn.style.background = 'white';
+                    btn.style.color = '#0099cc';
+                } else {
+                    btn.style.background = 'transparent';
+                    btn.style.color = '#666';
+                }
+            });
+
+            // 显示/隐藏周期选择器
+            const periodSelector = document.getElementById('periodSelector');
+            if (periodSelector) {
+                if (mode === 'period') {
+                    periodSelector.style.display = 'block';
+                    updatePaymentPeriodSelector();
+                } else {
+                    periodSelector.style.display = 'none';
+                }
+            }
+
+            // 重新渲染历史记录
+            renderHistory();
+        }
+
+        // 更新收入周期选择器
+        function updatePaymentPeriodSelector() {
+            const select = document.getElementById('paymentPeriodSelect');
+            if (!select) return;
+
+            const periods = generatePaymentPeriods();
+
+            select.innerHTML = '<option value="">请选择收入周期</option>';
+
+            periods.forEach(period => {
+                const option = document.createElement('option');
+                option.value = JSON.stringify(period);
+                option.textContent = period.label;
+
+                // 标记已有收入记录的周期
+                const hasPayment = data.paymentRecords.some(p =>
+                    p.startDate === period.startDate && p.endDate === period.endDate
+                );
+                if (hasPayment) {
+                    option.textContent += ' ✅';
+                }
+
+                select.appendChild(option);
+            });
+        }
+
+        // 添加收入记录
+        async function addPaymentRecord() {
+            const select = document.getElementById('paymentPeriodSelect');
+            if (!select.value) {
+                showErrorToast('❌ 请先选择收入周期！');
+                return;
+            }
+
+            const period = JSON.parse(select.value);
+
+            // 计算该周期内的工资
+            const periodRecords = data.workHistory.filter(r => {
+                return r.date >= period.startDate && r.date <= period.endDate;
+            });
+
+            const expectedSalary = periodRecords.reduce((sum, r) => sum + r.salary, 0);
+            const totalHours = periodRecords.reduce((sum, r) => sum + r.hours, 0);
+
+            // 检查是否已有该周期的收入记录
+            const existingPayment = data.paymentRecords.find(p =>
+                p.startDate === period.startDate && p.endDate === period.endDate
+            );
+
+            let message = `📅 周期：${period.label}\n`;
+            message += `⏰ 工作时长：${totalHours.toFixed(2)} 小时\n`;
+            message += `💵 应得工资：$${expectedSalary.toFixed(2)}\n\n`;
+
+            if (existingPayment) {
+                message += `⚠️ 该周期已有收入记录：$${existingPayment.amount.toFixed(2)}\n\n`;
+                message += `请输入新的到账金额（留空则保持不变）：`;
+            } else {
+                message += `请输入实际到账金额：`;
+            }
+
+            const confirmed = await showConfirm('添加收入记录', message, '💰', false);
+
+            if (confirmed) {
+                // 弹出输入框
+                showPaymentInputDialog(period, expectedSalary, existingPayment);
+            }
+        }
+
+        // 显示收入输入对话框
+        function showPaymentInputDialog(period, expectedSalary, existingPayment) {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.7);
+                z-index: 3000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            `;
+
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: white;
+                border-radius: 20px;
+                padding: 25px;
+                max-width: 400px;
+                width: 100%;
+            `;
+
+            dialog.innerHTML = `
+                <h3 style="margin: 0 0 20px 0; color: #333; font-size: 20px;">💰 输入到账金额</h3>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: #666; margin-bottom: 8px;">📅 周期：${period.label}</div>
+                    <div style="font-size: 14px; color: #666;">💵 应得：$${expectedSalary.toFixed(2)}</div>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 14px; color: #555; margin-bottom: 8px;">实际到账金额（$）：</label>
+                    <input type="number" id="paymentAmountInput" step="0.01" min="0" value="${existingPayment ? existingPayment.amount : expectedSalary.toFixed(2)}" style="width: 100%; padding: 12px; border: 2px solid #3ae8ff; border-radius: 10px; font-size: 16px; font-weight: 600;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button id="cancelPaymentBtn" style="flex: 1; padding: 12px; background: #e0e0e0; color: #666; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer;">取消</button>
+                    <button id="confirmPaymentBtn" style="flex: 1; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer;">确认</button>
+                </div>
+            `;
+
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+
+            // 聚焦输入框
+            setTimeout(() => {
+                document.getElementById('paymentAmountInput').focus();
+                document.getElementById('paymentAmountInput').select();
+            }, 100);
+
+            // 取消按钮
+            document.getElementById('cancelPaymentBtn').onclick = () => {
+                document.body.removeChild(overlay);
+            };
+
+            // 确认按钮
+            document.getElementById('confirmPaymentBtn').onclick = () => {
+                const amount = parseFloat(document.getElementById('paymentAmountInput').value);
+
+                if (isNaN(amount) || amount < 0) {
+                    showErrorToast('❌ 请输入有效的金额！');
+                    return;
+                }
+
+                // 添加或更新收入记录
+                if (existingPayment) {
+                    existingPayment.amount = amount;
+                    existingPayment.date = new Date().toISOString().split('T')[0];
+                } else {
+                    data.paymentRecords.push({
+                        id: Date.now(),
+                        startDate: period.startDate,
+                        endDate: period.endDate,
+                        amount: amount,
+                        expectedAmount: expectedSalary,
+                        date: new Date().toISOString().split('T')[0]
+                    });
+                }
+
+                saveData(data);
+                document.body.removeChild(overlay);
+                updatePaymentPeriodSelector();
+                renderHistory();
+
+                const diff = amount - expectedSalary;
+                let msg = `✅ 收入记录已保存！\n\n`;
+                msg += `💰 到账：$${amount.toFixed(2)}\n`;
+                msg += `📊 应得：$${expectedSalary.toFixed(2)}\n`;
+                if (diff > 0) {
+                    msg += `🎉 额外收入：$${diff.toFixed(2)}\n`;
+                    msg += `💡 额外收入已计入合计，不影响后续工资`;
+                } else if (diff < 0) {
+                    msg += `⚠️ 少收：$${Math.abs(diff).toFixed(2)}`;
+                } else {
+                    msg += `✅ 金额一致`;
+                }
+
+                showSuccessToast(msg);
+            };
+
+            // 回车确认
+            document.getElementById('paymentAmountInput').onkeypress = (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('confirmPaymentBtn').click();
+                }
+            };
         }
 
         // 应用行业预设
@@ -1709,7 +2274,17 @@
             
             // 保存默认开始时间
             data.defaultStartTime = newDefaultTime;
-            
+
+            // 保存默认休息时间设置
+            const defaultHasBreak = document.getElementById('defaultHasBreak').checked;
+            data.defaultBreak.enabled = defaultHasBreak;
+            if (defaultHasBreak) {
+                data.defaultBreak.startTime = document.getElementById('defaultBreakStart').value;
+                data.defaultBreak.endTime = document.getElementById('defaultBreakEnd').value;
+            }
+
+            // 自定义周期通过单独的管理界面保存，这里不需要额外处理
+
             // 保存惩罚率设置
             const penaltyEnabled = document.getElementById('enablePenaltyRates').checked;
             data.penaltyRates.enabled = penaltyEnabled;
@@ -1729,10 +2304,13 @@
             // 如果时薪改变或惩罚率设置改变，重新计算所有历史记录的工资
             if (rateChanged || penaltyEnabled !== (data.penaltyRates.enabled || false)) {
                 data.workHistory.forEach(record => {
-                    const result = calculateSalaryWithNightShift(
-                        record.startTime, 
-                        record.endTime, 
-                        record.date, 
+                    const result = calculateSalaryWithBreak(
+                        record.startTime,
+                        record.endTime,
+                        record.breakStartTime,
+                        record.breakEndTime,
+                        record.hasBreak || false,
+                        record.date,
                         record.isPublicHoliday || false,
                         newRate
                     );
@@ -1776,7 +2354,10 @@
             successMsg += `默认开始：${newDefaultTime}`;
             
             showSuccessToast('✅ 设置已保存！');
-            
+
+            // 自动隐藏设置页面
+            toggleSettings();
+
             // 可选：同时显示详细信息
             setTimeout(() => {
                 console.log(successMsg);
@@ -1817,32 +2398,43 @@
             const recordsOfDay = data.workHistory.filter(r => r.date === date).sort((a, b) => {
                 return a.startTime.localeCompare(b.startTime);
             });
-            
+
             if (recordsOfDay.length === 0) return '';
-            
+
             const dateObj = new Date(date + 'T00:00:00');
             const month = dateObj.getMonth() + 1;
             const day = dateObj.getDate();
-            const dateStr = month + '.' + (day < 10 ? '0' + day : day);
-            
+            const dateStr = month + '.' + day;
+
             const timePairs = recordsOfDay.map(record => {
-                const startTime = record.startTime.replace(':', '.');
-                const endTime = record.endTime.replace(':', '.');
-                
-                const startHour = parseInt(record.startTime.split(':')[0]);
-                const endHour = parseInt(record.endTime.split(':')[0]);
-                const isCrossDay = endHour < startHour || (endHour === startHour && record.endTime <= record.startTime);
-                
-                if (isCrossDay) {
-                    const [hours, minutes] = record.endTime.split(':');
-                    const newHour = parseInt(hours) + 24;
-                    return startTime + '-' + newHour + '.' + minutes;
+                // 如果有休息时间，分成两段显示
+                if (record.hasBreak && record.breakStartTime && record.breakEndTime) {
+                    const segment1 = formatTimeSegment(record.startTime, record.breakStartTime, false);
+                    const segment2 = formatTimeSegment(record.breakEndTime, record.endTime,
+                        isTimeCrossDay(record.breakEndTime, record.endTime));
+                    return segment1 + ' ' + segment2;
+                } else {
+                    return formatTimeSegment(record.startTime, record.endTime,
+                        isTimeCrossDay(record.startTime, record.endTime));
                 }
-                
-                return startTime + '-' + endTime;
             }).join(' ');
-            
+
             return dateStr + ' ' + userName + ' ' + timePairs + ' 谢谢';
+        }
+
+        function isTimeCrossDay(startTime, endTime) {
+            const startHour = parseInt(startTime.split(':')[0]);
+            const endHour = parseInt(endTime.split(':')[0]);
+            return endHour < startHour || (endHour === startHour && endTime <= startTime);
+        }
+
+        function formatTimeSegment(startTime, endTime, isCrossDay) {
+            if (isCrossDay) {
+                const [hours, minutes] = endTime.split(':');
+                const newHour = parseInt(hours) + 24;
+                return startTime + '-' + newHour + ':' + minutes;
+            }
+            return startTime + '-' + endTime;
         }
 
         function saveHourlyRate() {
@@ -1928,19 +2520,43 @@
         function autoSetEndTime() {
             const startTime = document.getElementById('startTime').value;
             if (!startTime) return;
-            
+
             const dailyHours = getDailyHours();
             const [hours, minutes] = startTime.split(':');
-            
+
             // 创建一个基准日期来计算
             const startDate = new Date(2000, 0, 1, parseInt(hours), parseInt(minutes), 0);
-            
-            // 加上工作时长
-            const endDate = new Date(startDate.getTime() + dailyHours * 60 * 60 * 1000);
-            
+
+            // 计算总时长（工作时长 + 休息时长）
+            let totalHours = dailyHours;
+
+            // 如果启用了默认休息时间，需要加上休息时长
+            const hasBreak = document.getElementById('hasBreak').checked;
+            if (hasBreak && data.defaultBreak.enabled) {
+                const breakStart = document.getElementById('breakStartTime').value || data.defaultBreak.startTime;
+                const breakEnd = document.getElementById('breakEndTime').value || data.defaultBreak.endTime;
+
+                if (breakStart && breakEnd) {
+                    const [breakStartH, breakStartM] = breakStart.split(':').map(Number);
+                    const [breakEndH, breakEndM] = breakEnd.split(':').map(Number);
+
+                    const breakStartMinutes = breakStartH * 60 + breakStartM;
+                    const breakEndMinutes = breakEndH * 60 + breakEndM;
+
+                    // 计算休息时长（小时）
+                    const breakHours = (breakEndMinutes - breakStartMinutes) / 60;
+
+                    // 总时长 = 工作时长 + 休息时长
+                    totalHours = dailyHours + breakHours;
+                }
+            }
+
+            // 加上总时长
+            const endDate = new Date(startDate.getTime() + totalHours * 60 * 60 * 1000);
+
             const endHours = String(endDate.getHours()).padStart(2, '0');
             const endMinutes = String(endDate.getMinutes()).padStart(2, '0');
-            
+
             document.getElementById('endTime').value = `${endHours}:${endMinutes}`;
             calculateWork();
         }
@@ -1990,6 +2606,22 @@
         // 计算两个时间点之间的小时数
         function getHoursBetween(start, end) {
             return (end - start) / (1000 * 60 * 60);
+        }
+
+        // 分段计算工资（考虑休息时间和深夜时段）
+        function calculateSalaryWithBreak(startTime, endTime, breakStartTime, breakEndTime, hasBreak, dateStr, isPublicHoliday, baseRate) {
+            // 如果有休息时间，分成两段计算
+            if (hasBreak && breakStartTime && breakEndTime) {
+                const result1 = calculateSalaryWithNightShift(startTime, breakStartTime, dateStr, isPublicHoliday, baseRate);
+                const result2 = calculateSalaryWithNightShift(breakEndTime, endTime, dateStr, isPublicHoliday, baseRate);
+
+                return {
+                    totalSalary: result1.totalSalary + result2.totalSalary,
+                    segments: [...result1.segments, ...result2.segments]
+                };
+            } else {
+                return calculateSalaryWithNightShift(startTime, endTime, dateStr, isPublicHoliday, baseRate);
+            }
         }
 
         // 分段计算工资（考虑深夜时段）
@@ -2102,7 +2734,10 @@
             const endTime = document.getElementById('endTime').value;
             const dateInput = document.getElementById('dateInput').value;
             const isPublicHoliday = document.getElementById('isPublicHoliday').checked;
-            
+            const hasBreak = document.getElementById('hasBreak').checked;
+            const breakStartTime = document.getElementById('breakStartTime').value;
+            const breakEndTime = document.getElementById('breakEndTime').value;
+
             if (!startTime || !endTime) {
                 document.getElementById('calculatedDisplay').textContent = '请输入时间';
                 return null;
@@ -2110,16 +2745,34 @@
 
             let start = new Date('2000-01-01 ' + startTime);
             let end = new Date('2000-01-01 ' + endTime);
-            
+
             if (end <= start) {
                 end = new Date('2000-01-02 ' + endTime);
             }
 
-            const hours = getHoursBetween(start, end);
+            let hours = getHoursBetween(start, end);
+
+            // 扣除休息时间
+            let breakHours = 0;
+            if (hasBreak && breakStartTime && breakEndTime) {
+                let breakStart = new Date('2000-01-01 ' + breakStartTime);
+                let breakEnd = new Date('2000-01-01 ' + breakEndTime);
+
+                if (breakEnd <= breakStart) {
+                    breakEnd = new Date('2000-01-02 ' + breakEndTime);
+                }
+
+                // 确保休息时间在工作时间范围内
+                if (breakStart >= start && breakEnd <= end) {
+                    breakHours = getHoursBetween(breakStart, breakEnd);
+                    hours -= breakHours;
+                }
+            }
+
             const baseRate = getHourlyRate();
-            
-            // 计算工资（考虑深夜时段）
-            const result = calculateSalaryWithNightShift(startTime, endTime, dateInput, isPublicHoliday, baseRate);
+
+            // 计算工资（考虑深夜时段和休息时间）
+            const result = calculateSalaryWithBreak(startTime, endTime, breakStartTime, breakEndTime, hasBreak, dateInput, isPublicHoliday, baseRate);
             const salary = result.totalSalary;
             
             // 获取主要倍率用于显示
@@ -2167,14 +2820,22 @@
             const dateInput = document.getElementById('dateInput').value;
             const startTime = document.getElementById('startTime').value;
             const endTime = document.getElementById('endTime').value;
-            
+            const hasBreak = document.getElementById('hasBreak').checked;
+            const breakStartTime = document.getElementById('breakStartTime').value;
+            const breakEndTime = document.getElementById('breakEndTime').value;
+
             if (!dateInput) {
                 showErrorToast('❌ 请选择日期！');
                 return;
             }
-            
+
             if (!startTime || !endTime) {
                 showErrorToast('❌ 请输入开始和结束时间！');
+                return;
+            }
+
+            if (hasBreak && (!breakStartTime || !breakEndTime)) {
+                showErrorToast('❌ 请输入休息时间！');
                 return;
             }
 
@@ -2182,7 +2843,7 @@
             if (!calc) {
                 return;
             }
-            
+
             const isPublicHoliday = document.getElementById('isPublicHoliday').checked;
 
             const record = {
@@ -2190,6 +2851,9 @@
                 date: dateInput,
                 startTime: startTime,
                 endTime: endTime,
+                hasBreak: hasBreak,
+                breakStartTime: hasBreak ? breakStartTime : null,
+                breakEndTime: hasBreak ? breakEndTime : null,
                 hours: calc.hours,
                 salary: calc.salary,
                 isPublicHoliday: isPublicHoliday,
@@ -2217,15 +2881,21 @@
             document.getElementById('startTime').value = '';
             document.getElementById('endTime').value = '';
             document.getElementById('isPublicHoliday').checked = false;
+            document.getElementById('hasBreak').checked = false;
+            document.getElementById('breakStartTime').value = '';
+            document.getElementById('breakEndTime').value = '';
+            document.getElementById('breakTimeInputs').style.display = 'none';
             document.getElementById('calculatedDisplay').textContent = '请输入时间';
             setDefaultDate();
             setDefaultStartTime();
+            setDefaultBreakTime(); // 设置默认休息时间
             autoSetEndTime(); // 重新设置结束时间
         }
 
         function renderHistory() {
             const container = document.getElementById('historyContainer');
-            
+            const mode = data.currentViewMode || 'current';
+
             if (data.workHistory.length === 0) {
                 container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">暂无工作记录</div>';
                 document.getElementById('totalSalary').textContent = '$0.00';
@@ -2234,17 +2904,98 @@
                 return;
             }
 
-            // 计算总工资、已收款、未收款
-            const totalSalary = data.workHistory.reduce((sum, record) => sum + record.salary, 0);
-            const paidSalary = data.workHistory.reduce((sum, record) => sum + (record.paid ? record.salary : 0), 0);
-            const unpaidSalary = totalSalary - paidSalary;
-            
-            document.getElementById('totalSalary').textContent = '$' + totalSalary.toFixed(2);
-            document.getElementById('paidSalary').textContent = '$' + paidSalary.toFixed(2);
+            let filteredRecords = [];
+            let totalPaid = 0;
+
+            // 根据查看模式筛选记录
+            if (mode === 'current') {
+                // 当前模式：显示从上次收入之后到现在的记录
+                const lastPayment = data.paymentRecords.length > 0
+                    ? data.paymentRecords.reduce((latest, p) =>
+                        p.date > latest.date ? p : latest
+                    )
+                    : null;
+
+                if (lastPayment) {
+                    filteredRecords = data.workHistory.filter(r => r.date > lastPayment.endDate);
+                } else {
+                    filteredRecords = data.workHistory;
+                }
+                totalPaid = 0; // 当前模式没有已收款
+
+            } else if (mode === 'period') {
+                // 本次收入模式：显示选定周期的记录
+                const select = document.getElementById('paymentPeriodSelect');
+                if (select.value) {
+                    const period = JSON.parse(select.value);
+                    filteredRecords = data.workHistory.filter(r =>
+                        r.date >= period.startDate && r.date <= period.endDate
+                    );
+
+                    // 查找该周期的收入记录
+                    const payment = data.paymentRecords.find(p =>
+                        p.startDate === period.startDate && p.endDate === period.endDate
+                    );
+                    totalPaid = payment ? payment.amount : 0;
+                } else {
+                    filteredRecords = [];
+                }
+
+            } else if (mode === 'total') {
+                // 总计模式：显示所有记录
+                filteredRecords = data.workHistory;
+                totalPaid = data.paymentRecords.reduce((sum, p) => sum + p.amount, 0);
+            }
+
+            // 计算工资统计
+            const totalExpectedSalary = filteredRecords.reduce((sum, r) => sum + r.salary, 0);
+            // 如果收到的钱比应得多，未收款显示0（额外收入不影响未来周期）
+            const unpaidSalary = Math.max(0, totalExpectedSalary - totalPaid);
+            // 如果有额外收入，合计工资显示实际收到的金额
+            const displayTotalSalary = Math.max(totalExpectedSalary, totalPaid);
+
+            document.getElementById('totalSalary').textContent = '$' + displayTotalSalary.toFixed(2);
+            document.getElementById('paidSalary').textContent = '$' + totalPaid.toFixed(2);
             document.getElementById('unpaidSalary').textContent = '$' + unpaidSalary.toFixed(2);
 
+            if (filteredRecords.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">当前筛选条件下暂无记录</div>';
+                return;
+            }
+
+            // 计算上次未收款金额（仅在"当前"模式下显示）
+            let previousUnpaidHtml = '';
+            if (mode === 'current' && data.paymentRecords.length > 0) {
+                const lastPayment = data.paymentRecords.reduce((latest, p) =>
+                    p.date > latest.date ? p : latest
+                );
+
+                // 计算该周期内的应得工资
+                const periodRecords = data.workHistory.filter(r =>
+                    r.date >= lastPayment.startDate && r.date <= lastPayment.endDate
+                );
+                const expectedSalary = periodRecords.reduce((sum, r) => sum + r.salary, 0);
+                const unpaidAmount = expectedSalary - lastPayment.amount;
+
+                // 只有当未收款金额 > 0 时才显示
+                if (unpaidAmount > 0) {
+                    previousUnpaidHtml = `
+                        <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                <span style="font-size: 18px;">⚠️</span>
+                                <span style="font-weight: 600; color: #e65100;">上次工资未结清</span>
+                            </div>
+                            <div style="font-size: 14px; color: #666; line-height: 1.5;">
+                                周期：${lastPayment.startDate} 至 ${lastPayment.endDate}<br>
+                                应得：$${expectedSalary.toFixed(2)} | 实收：$${lastPayment.amount.toFixed(2)} | 少收：<span style="font-weight: 600; color: #d32f2f;">$${unpaidAmount.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
             const groupedByDate = {};
-            data.workHistory.forEach(record => {
+            filteredRecords.forEach(record => {
                 if (!groupedByDate[record.date]) {
                     groupedByDate[record.date] = [];
                 }
@@ -2253,7 +3004,7 @@
 
             const sortedDates = Object.keys(groupedByDate).sort((a, b) => b.localeCompare(a));
 
-            container.innerHTML = sortedDates.map(date => {
+            container.innerHTML = previousUnpaidHtml + sortedDates.map(date => {
                 const records = groupedByDate[date];
                 const dateObj = new Date(date + 'T00:00:00');
                 const dateStr = dateObj.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'short' });
@@ -2263,47 +3014,48 @@
                 const recordsHTML = records.map(record => {
                     let rateInfo = '';
                     let holidayTag = '';
-                    let paidTag = '';
-                    
+                    let breakTag = '';
+
                     // 显示惩罚率信息
                     if (record.penaltyMultiplier && record.penaltyMultiplier > 1) {
                         rateInfo = ` <span style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">${record.penaltyMultiplier}x</span>`;
                     }
-                    
+
                     // 显示公共假期标记
                     if (record.isPublicHoliday) {
                         holidayTag = ' <span style="background: #ff9800; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">🎉假期</span>';
                     }
-                    
-                    // 显示已收款标记
-                    if (record.paid) {
-                        paidTag = ' <span style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">✅已收款</span>';
+
+
+                    // 显示休息时间标记
+                    if (record.hasBreak && record.breakStartTime && record.breakEndTime) {
+                        breakTag = ` <span style="background: #2196F3; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">⏸️休息 ${record.breakStartTime}-${record.breakEndTime}</span>`;
                     }
-                    
-                    // 标记已收款/取消收款按钮
-                    const paymentBtn = record.paid 
-                        ? `<button class="delete-btn mark-unpaid-btn" data-record-id="${record.id}" style="background: #999;">❌ 取消收款</button>`
-                        : `<button class="delete-btn mark-paid-btn" data-record-id="${record.id}" style="background: #4CAF50;">✅ 标记收款</button>`;
-                    
-                    const itemStyle = record.paid 
-                        ? 'margin-bottom: 5px; border-left-color: #4CAF50; opacity: 0.8;'
-                        : 'margin-bottom: 5px; border-left-color: #999;';
-                    
+
+                    // 显示时间
+                    let timeDisplay;
+                    if (record.hasBreak && record.breakStartTime && record.breakEndTime) {
+                        timeDisplay = `⏰ ${record.startTime}-${record.breakStartTime} + ${record.breakEndTime}-${record.endTime}`;
+                    } else {
+                        timeDisplay = `⏰ ${record.startTime} - ${record.endTime}`;
+                    }
+
+                    const itemStyle = 'margin-bottom: 5px;';
+
                     return `<div class="history-item" style="${itemStyle}">
-                        <div class="history-time">⏰ ${record.startTime} - ${record.endTime}${holidayTag}${rateInfo}${paidTag}</div>
+                        <div class="history-time">${timeDisplay}${holidayTag}${breakTag}${rateInfo}</div>
                         <div class="history-result">
                             <span>${record.hours.toFixed(2)} 小时</span>
                             <span>$${record.salary.toFixed(2)}</span>
                         </div>
                         <div style="display: flex; gap: 5px; margin-top: 5px;">
-                            ${paymentBtn}
                             <button class="delete-btn delete-record-btn" data-record-id="${record.id}">删除</button>
                         </div>
                     </div>`;
                 }).join('');
 
                 return `<div style="margin-bottom: 15px;">
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                    <div style="background: radial-gradient(circle at top left, #ffffff 0%, #fdffe1 20%, #bff5ff 70%, #3ae8ff 100%); color: #666; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
                         <div style="font-weight: 600; margin-bottom: 5px;">${dateStr}</div>
                         <div style="font-size: 14px; opacity: 0.95;">合计：${dayHours.toFixed(2)} 小时 / $${dayTotal.toFixed(2)}</div>
                     </div>
@@ -2313,37 +3065,6 @@
             }).join('');
         }
 
-        async function markRecordPaid(id) {
-            const record = data.workHistory.find(r => r.id === id);
-            if (!record) return;
-            
-            const message = `📅 日期：${record.date}\n⏰ 时间：${record.startTime} - ${record.endTime}\n💰 工资：$${record.salary.toFixed(2)}\n\n确认已收到这笔工资？`;
-            
-            const confirmed = await showConfirm('标记已收款', message, '✅', true);
-            
-            if (confirmed) {
-                record.paid = true;
-                saveData(data);
-                renderHistory();
-                showSuccessToast('✅ 已标记为已收款！');
-            }
-        }
-
-        async function markRecordUnpaid(id) {
-            const record = data.workHistory.find(r => r.id === id);
-            if (!record) return;
-            
-            const message = `📅 日期：${record.date}\n⏰ 时间：${record.startTime} - ${record.endTime}\n💰 工资：$${record.salary.toFixed(2)}\n\n取消已收款标记？`;
-            
-            const confirmed = await showConfirm('取消收款标记', message, '❌', true);
-            
-            if (confirmed) {
-                record.paid = false;
-                saveData(data);
-                renderHistory();
-                showSuccessToast('✅ 已取消收款标记！');
-            }
-        }
 
         async function deleteRecord(id) {
             const record = data.workHistory.find(r => r.id === id);
@@ -2676,7 +3397,7 @@
                 padding: 12px;
                 font-size: 11px;
                 font-family: monospace;
-                border: 2px solid #667eea;
+                border: 2px solid #3ae8ff;
                 border-radius: 10px;
                 resize: none;
                 margin-bottom: 15px;
@@ -2761,11 +3482,35 @@
                     const confirmed = await showConfirm('确认导入数据', message, '📥', false);
                     
                     if (confirmed) {
+                        // 确保导入的数据有所有必需的字段
+                        if (!importedData.customPeriods) {
+                            importedData.customPeriods = [];
+                        }
+                        if (!importedData.paymentRecords) {
+                            importedData.paymentRecords = [];
+                        }
+                        if (!importedData.currentViewMode) {
+                            importedData.currentViewMode = 'current';
+                        }
+                        if (!importedData.defaultBreak) {
+                            importedData.defaultBreak = {
+                                enabled: false,
+                                startTime: '15:00',
+                                endTime: '17:00'
+                            };
+                        }
+
                         data = importedData;
                         saveData(data);
+
+                        // 更新所有显示
                         setHourlyRateDisplay();
                         setUserNameDisplay();
                         setDailyHoursDisplay();
+                        setPenaltyRatesDisplay();
+                        setDefaultBreakDisplay();
+                        renderCustomPeriods(); // 渲染自定义周期列表
+                        switchViewMode(data.currentViewMode || 'current'); // 切换到保存的查看模式
                         renderHistory();
                         renderCompletedGoals();
                         renderGoals();
@@ -2791,6 +3536,8 @@
         document.getElementById('addGoalBtn').addEventListener('click', () => openGoalForm());
         document.getElementById('cancelGoalBtn').addEventListener('click', closeGoalForm);
         document.getElementById('saveGoalBtn').addEventListener('click', saveGoal);
+        document.getElementById('cancelPeriodBtn').addEventListener('click', closePeriodForm);
+        document.getElementById('savePeriodBtn').addEventListener('click', savePeriod);
         document.getElementById('settingsToggle').addEventListener('click', toggleSettings);
         document.getElementById('saveAllSettingsBtn').addEventListener('click', saveAllSettings);
         document.getElementById('exportDataBtn').addEventListener('click', exportData);
@@ -2805,26 +3552,52 @@
         document.getElementById('isPublicHoliday').addEventListener('change', calculateWork);
         document.getElementById('dateInput').addEventListener('change', calculateWork);
 
+        // 休息时间相关事件监听器
+        document.getElementById('hasBreak').addEventListener('change', function() {
+            const breakTimeInputs = document.getElementById('breakTimeInputs');
+            if (this.checked) {
+                breakTimeInputs.style.display = 'grid';
+                // 如果启用了默认休息时间，自动填充
+                if (data.defaultBreak.enabled) {
+                    document.getElementById('breakStartTime').value = data.defaultBreak.startTime;
+                    document.getElementById('breakEndTime').value = data.defaultBreak.endTime;
+                }
+            } else {
+                breakTimeInputs.style.display = 'none';
+            }
+            autoSetEndTime(); // 重新计算结束时间
+            calculateWork();
+        });
+        document.getElementById('breakStartTime').addEventListener('change', function() {
+            autoSetEndTime(); // 重新计算结束时间
+            calculateWork();
+        });
+        document.getElementById('breakEndTime').addEventListener('change', function() {
+            autoSetEndTime(); // 重新计算结束时间
+            calculateWork();
+        });
+        document.getElementById('defaultHasBreak').addEventListener('change', toggleDefaultBreakSettings);
+
+        // 收入周期相关事件监听器
+        document.getElementById('addPeriodBtn').addEventListener('click', showAddPeriodDialog);
+        document.getElementById('addPaymentBtn').addEventListener('click', addPaymentRecord);
+        document.getElementById('paymentPeriodSelect').addEventListener('change', function() {
+            if (data.currentViewMode === 'period') {
+                renderHistory();
+            }
+        });
+
+        // 查看模式切换事件监听器
+        document.querySelectorAll('.view-mode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                switchViewMode(this.getAttribute('data-mode'));
+            });
+        });
+
 
         function handleButtonClick(e) {
             const target = e.target;
-            
-            if (target.classList.contains('mark-paid-btn')) {
-                e.preventDefault();
-                e.stopPropagation();
-                const id = parseInt(target.getAttribute('data-record-id'));
-                markRecordPaid(id);
-                return;
-            }
-            
-            if (target.classList.contains('mark-unpaid-btn')) {
-                e.preventDefault();
-                e.stopPropagation();
-                const id = parseInt(target.getAttribute('data-record-id'));
-                markRecordUnpaid(id);
-                return;
-            }
-            
+
             if (target.classList.contains('delete-record-btn')) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -2901,6 +3674,22 @@
                 moveGoalDown(id);
                 return;
             }
+
+            if (target.classList.contains('edit-period-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const periodId = target.getAttribute('data-period-id');
+                editCustomPeriod(periodId);
+                return;
+            }
+
+            if (target.classList.contains('delete-period-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const periodId = target.getAttribute('data-period-id');
+                deleteCustomPeriod(periodId);
+                return;
+            }
         }
         
         document.body.addEventListener('click', handleButtonClick);
@@ -2908,11 +3697,15 @@
 
         setDefaultDate();
         setDefaultStartTime();
+        setDefaultBreakTime(); // 初始化休息时间
         autoSetEndTime(); // 初始化结束时间
         setHourlyRateDisplay();
         setUserNameDisplay();
         setDailyHoursDisplay();
         setPenaltyRatesDisplay(); // 初始化惩罚率设置显示
+        setDefaultBreakDisplay(); // 初始化默认休息时间设置显示
+        renderCustomPeriods(); // 初始化自定义周期列表显示
+        switchViewMode(data.currentViewMode || 'current'); // 初始化查看模式
         renderHistory();
         renderCompletedGoals();
         renderGoals();
