@@ -3185,7 +3185,7 @@
 
                 let idealHint = '';
                 if (calc.idealProgress >= 100 && calc.progress < 100) {
-                    idealHint = '<div style="font-size: 11px; color: #FF9800; margin-top: 4px;">💡 理想情况下已可完成</div>';
+                    idealHint = '<div style="font-size: 11px; color: #FF9800; margin-top: 4px;">💡 当前已达成目标金额</div>';
                 }
 
                 let remainingDaysDisplay = '';
@@ -3210,7 +3210,7 @@
                 </div>
                 <div class="progress-bar-container">
                     <div class="progress-label">
-                        <span style="color: #FF9800;">💛 理想进度</span>
+                        <span style="color: #FF9800;">💛 当前进度</span>
                         <span style="color: #FF9800;">${calc.idealProgress.toFixed(1)}%</span>
                     </div>
                     <div class="progress-bar-wrapper">
@@ -3320,7 +3320,7 @@
             const totalMoneyNeeded = totalHoursNeeded * getHourlyRate();
             const earnedSoFar = data.totalHours * getHourlyRate();
 
-            // 理想进度（不考虑已花费的钱）
+            // 当前进度（不考虑已花费的钱）
             const idealAvailableMoney = Math.max(0, earnedSoFar);
             const idealProgress = Math.min(100, (idealAvailableMoney / totalMoneyNeeded) * 100);
 
