@@ -521,9 +521,6 @@
             border: 2px dashed #999;
         }
 
-        .goal-card.waiting .progress-bar {
-            background: linear-gradient(90deg, #FFA726 0%, #FB8C00 100%);
-        }
 
         .goal-card.waiting .goal-title::after {
             content: ' ⏳';
@@ -746,18 +743,42 @@
         }
 
         .progress-bar-container {
-            background: #f0f0f0;
-            height: 12px;
-            border-radius: 10px;
-            overflow: hidden;
             margin-bottom: 10px;
+        }
+
+        .progress-bar-wrapper {
+            background: #f0f0f0;
+            height: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 4px;
+            position: relative;
         }
 
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #bfffc8 0%, #00ff2a 100%);
-            border-radius: 10px;
+            border-radius: 8px;
             transition: width 0.5s ease;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .progress-bar-ideal {
+            background: linear-gradient(90deg, #FFD54F 0%, #FFA726 100%);
+        }
+
+        .progress-bar-actual {
+            background: linear-gradient(90deg, #bfffc8 0%, #00ff2a 100%);
+        }
+
+        .progress-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .goal-details {
@@ -3122,15 +3143,23 @@
 
             const totalEarned = data.totalHours * getHourlyRate();
             const availableMoney = totalEarned - (data.spentMoney || 0);
-            
+
+            // 累计计算每个目标之前所有目标的总金额
+            let cumulativeUsedMoney = data.spentMoney || 0;
+
             data.goals.forEach((goal, index) => {
                 const isPriority = index === 0;
-                const calc = calculateGoalProgress(goal, isPriority ? (data.spentMoney || 0) : 0);
+                const calc = calculateGoalProgress(goal, cumulativeUsedMoney);
                 const canComplete = calc.progress >= 100 && isPriority;
+
+                // 为下一个目标累加当前目标的金额
+                if (index < data.goals.length - 1) {
+                    cumulativeUsedMoney += goal.price;
+                }
                 
                 const card = document.createElement('div');
                 let cardClass = 'goal-card';
-                if (!isPriority && calc.progress >= 100) {
+                if (!isPriority && calc.idealProgress >= 100) {
                     cardClass += ' waiting';
                 }
                 card.className = cardClass;
@@ -3150,32 +3179,51 @@
                 }
                 
                 let statusHint = '';
-                if (!isPriority && calc.progress >= 100) {
+                if (!isPriority && calc.idealProgress >= 100) {
                     statusHint = '<div style="background: #FFF3E0; padding: 8px; border-radius: 6px; margin-top: 8px; font-size: 12px; color: #F57C00;">⏳ 已达成！调整为第一优先级后可确认购买</div>';
                 }
-                
+
+                let idealHint = '';
+                if (calc.idealProgress >= 100 && calc.progress < 100) {
+                    idealHint = '<div style="font-size: 11px; color: #FF9800; margin-top: 4px;">💡 理想情况下已可完成</div>';
+                }
+
                 let remainingDaysDisplay = '';
                 if (calc.progress < 100) {
-                    const motivationText = calc.remainingDays <= 1 ? '🔥 马上就要实现了！' : 
+                    const motivationText = calc.remainingDays <= 1 ? '🔥 马上就要实现了！' :
                                          calc.remainingDays <= 3 ? '💪 再坚持几天！' :
                                          calc.remainingDays <= 7 ? '⭐ 一周内可达成！' : '🎯 继续加油！';
-                    
+
                     remainingDaysDisplay = `
                         <div class="remaining-days-highlight">
-                            <div class="label">还需工作</div>
+                            <div class="label">实际还需工作</div>
                             <div class="big-number">${calc.remainingDays}</div>
                             <div class="label">天 (${calc.remainingHours} 小时)</div>
                             <div class="motivation">${motivationText}</div>
                         </div>
                     `;
                 }
-                
+
                 card.innerHTML = `<div class="goal-header">
                     <div class="goal-title">${goal.icon} ${goal.name}${priorityBadge}</div>
                     <div class="goal-status">${calc.progress.toFixed(1)}%</div>
                 </div>
                 <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: ${Math.min(calc.progress, 100)}%"></div>
+                    <div class="progress-label">
+                        <span style="color: #FF9800;">💛 理想进度</span>
+                        <span style="color: #FF9800;">${calc.idealProgress.toFixed(1)}%</span>
+                    </div>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar progress-bar-ideal" style="width: ${Math.min(calc.idealProgress, 100)}%"></div>
+                    </div>
+                    ${idealHint}
+                    <div class="progress-label" style="margin-top: 8px;">
+                        <span style="color: #4CAF50;">💚 实际可用</span>
+                        <span style="color: #4CAF50;">${calc.progress.toFixed(1)}%</span>
+                    </div>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar progress-bar-actual" style="width: ${Math.min(calc.progress, 100)}%"></div>
+                    </div>
                 </div>
                 <div class="goal-details">
                     <span>目标: ${goal.days.toFixed(2)}天 (${calc.totalHoursNeeded.toFixed(2)}小时)</span>
@@ -3271,17 +3319,24 @@
             const totalHoursNeeded = goal.days * dailyHours;
             const totalMoneyNeeded = totalHoursNeeded * getHourlyRate();
             const earnedSoFar = data.totalHours * getHourlyRate();
-            
+
+            // 理想进度（不考虑已花费的钱）
+            const idealAvailableMoney = Math.max(0, earnedSoFar);
+            const idealProgress = Math.min(100, (idealAvailableMoney / totalMoneyNeeded) * 100);
+
+            // 实际可用进度（扣除所有已花费和优先级更高的目标）
             const availableMoney = Math.max(0, earnedSoFar - usedMoney);
             const progress = Math.min(100, (availableMoney / totalMoneyNeeded) * 100);
             const remainingMoney = Math.max(0, totalMoneyNeeded - availableMoney);
             const remainingHours = Math.max(0, Math.ceil(remainingMoney / getHourlyRate()));
             const remainingDays = Math.max(0, (remainingHours / dailyHours).toFixed(1));
-            
+
             return {
                 progress,
+                idealProgress,
                 totalMoneyNeeded,
                 availableMoney,
+                idealAvailableMoney,
                 remainingMoney,
                 remainingHours,
                 remainingDays,
